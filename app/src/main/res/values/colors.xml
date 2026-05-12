@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compose owns runtime colors. This file exists for legacy XML refs only. -->
+    <color name="ic_launcher_background">#FF000000</color>
+    <color name="mihrab_gold">#FFD4A537</color>
+    <color name="mihrab_black">#FF000000</color>
+</resources>

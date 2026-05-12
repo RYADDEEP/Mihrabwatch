@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mihrab</string>
+    <string name="tile_label">Mihrab Next Prayer</string>
+    <string name="complication_label">Mihrab Next Prayer</string>
+    <string name="screen_home">Home</string>
+    <string name="screen_prayers">Prayer List</string>
+    <string name="screen_qibla">Qibla</string>
+    <string name="screen_alert">Prayer Alert</string>
+    <string name="screen_settings">Settings</string>
+</resources>
