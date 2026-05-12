@@ -32,3 +32,6 @@ Thumbs.db
 # Logs / temp
 *.log
 .tmp/
+
+# Gradle daemon JVM config (auto-generated, machine-specific)
+gradle/gradle-daemon-jvm.properties
