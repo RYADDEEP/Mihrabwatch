@@ -140,7 +140,7 @@ fun PairingScreen(
                         text = s.row.pairingCode,
                         color = MihrabGold,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 36.sp,
+                        fontSize = 28.sp,
                         letterSpacing = 0.08.em,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
