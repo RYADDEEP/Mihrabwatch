@@ -22,6 +22,10 @@ val MihrabGoldBright = Color(0xFFF5C842)
 val MihrabSuccessGreen = Color(0xFF30D158)
 val MihrabAlertRed = Color(0xFFFF453A)
 
+// Prayer Home ring tokens — exact values from MIHRAB_WATCH_DESIGN_GUIDE.md Part 5 Screen 1
+val MihrabRingTrack = Color(0x1AFFFFFF)
+val MihrabRingCountdownText = Color(0x99EBEBF5)
+
 // Prayer colors — sky-based palette, locked per design guide Section 2.2
 val PrayerFajr = Color(0xFF8AABBA)
 val PrayerSunrise = Color(0xFFF5C978)

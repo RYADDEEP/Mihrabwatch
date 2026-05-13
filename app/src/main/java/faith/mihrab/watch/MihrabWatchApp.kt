@@ -77,12 +77,7 @@ fun MihrabWatchApp(
                     )
                 }
                 composable(Routes.HOME) {
-                    PrayerHomeScreen(
-                        onNavigateToPrayers = { navController.navigate(Routes.PRAYERS) },
-                        onNavigateToQibla = { navController.navigate(Routes.QIBLA) },
-                        onNavigateToAlert = { navController.navigate(Routes.ALERT) },
-                        onNavigateToSettings = { navController.navigate(Routes.SETTINGS) },
-                    )
+                    PrayerHomeScreen()
                 }
                 composable(Routes.PRAYERS) { PrayerListScreen() }
                 composable(Routes.QIBLA) { QiblaCompassScreen() }
