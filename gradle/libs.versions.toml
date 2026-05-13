@@ -13,6 +13,11 @@ lifecycle = "2.9.0"
 junit = "4.13.2"
 espresso = "3.6.1"
 testExt = "1.2.1"
+supabase = "3.0.3"
+ktor = "3.0.3"
+datastore = "1.1.1"
+kotlinxSerialization = "1.7.3"
+kotlinxCoroutines = "1.9.0"
 
 [libraries]
 # Core
@@ -47,6 +52,18 @@ wear-protolayout-expression = { module = "androidx.wear.protolayout:protolayout-
 # Complications
 wear-complications-data-source-ktx = { module = "androidx.wear.watchface:watchface-complications-data-source-ktx", version.ref = "complications" }
 
+# Supabase + Ktor (Realtime + Postgrest for pairing flow)
+supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
+supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt", version.ref = "supabase" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+
+# Local credential storage
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+
+# Serialization + coroutines (Supabase-kt transitive deps — pin explicitly so versions are visible)
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
+
 # Test
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "testExt" }
@@ -58,3 +75,4 @@ compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 # AGP 9.0+ bundles Kotlin Android support — no separate kotlin.android plugin needed.
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

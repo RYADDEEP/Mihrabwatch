@@ -1,6 +1,14 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+}
+
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 android {
@@ -15,6 +23,17 @@ android {
         versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "SUPABASE_URL",
+            "\"${localProps.getProperty("SUPABASE_URL", "")}\"",
+        )
+        buildConfigField(
+            "String",
+            "SUPABASE_ANON_KEY",
+            "\"${localProps.getProperty("SUPABASE_ANON_KEY", "")}\"",
+        )
     }
 
     buildTypes {
@@ -34,6 +53,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {
@@ -75,6 +95,18 @@ dependencies {
 
     // Complications
     implementation(libs.wear.complications.data.source.ktx)
+
+    // Supabase + Ktor (pairing flow: Postgrest INSERT + Realtime subscription)
+    implementation(libs.supabase.postgrest)
+    implementation(libs.supabase.realtime)
+    implementation(libs.ktor.client.okhttp)
+
+    // Local credential storage (pairingId + pairedUserId after successful pair)
+    implementation(libs.androidx.datastore.preferences)
+
+    // Serialization + coroutines (Supabase-kt requirements — pinned explicitly)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.android)
 
     // Test
     testImplementation(libs.junit)
