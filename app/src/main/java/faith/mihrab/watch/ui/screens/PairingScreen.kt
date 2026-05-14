@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.tooling.preview.Preview
+import faith.mihrab.watch.ui.theme.MihrabWatchTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -158,6 +160,64 @@ fun PairingScreen(
                         fontSize = 12.sp,
                     )
                 }
+            }
+        }
+    }
+}
+
+// PairingScreen is a monolithic stateful Composable that requires PairingRepository and
+// PairingDataStore — both need a live Supabase client and cannot be cheaply mocked.
+// This preview renders a static representative layout matching PairingState.Active so the
+// visual shape can be audited. Refactor to stateful/stateless split is deferred to the
+// follow-up polish session.
+@Preview(
+    device = "id:wearos_large_round",
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+)
+@Composable
+private fun PairingScreenPreview() {
+    MihrabWatchTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MihrabBlack)
+                .padding(24.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = "MIHRAB",
+                    color = MihrabGold,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.2.em,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Spacer(Modifier.height(18.dp))
+                Text(
+                    text = "123456",
+                    color = MihrabGold,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 28.sp,
+                    letterSpacing = 0.08.em,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    text = "Enter on phone",
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontSize = 13.sp,
+                )
+                Spacer(Modifier.height(24.dp))
+                Text(
+                    text = "expires in 4:59",
+                    color = MihrabGold.copy(alpha = 0.6f),
+                    fontSize = 12.sp,
+                )
             }
         }
     }
