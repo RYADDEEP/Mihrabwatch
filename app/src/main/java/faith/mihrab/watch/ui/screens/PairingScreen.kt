@@ -21,12 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material3.Text
 import faith.mihrab.watch.data.PairingDataStore
@@ -34,6 +34,7 @@ import faith.mihrab.watch.data.PairingRepository
 import faith.mihrab.watch.data.PairingRow
 import faith.mihrab.watch.ui.theme.MihrabBlack
 import faith.mihrab.watch.ui.theme.MihrabGold
+import faith.mihrab.watch.ui.theme.MihrabGoldBright
 import kotlinx.coroutines.delay
 import java.time.Instant
 
@@ -131,33 +132,34 @@ fun PairingScreen(
                     modifier = if (expired) Modifier.clickable { attempt += 1 } else Modifier,
                 ) {
                     Text(
-                        text = "MIHRAB",
-                        color = MihrabGold,
-                        fontSize = 14.sp,
-                        letterSpacing = 0.2.em,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Spacer(Modifier.height(18.dp))
-                    Text(
                         text = s.row.pairingCode,
-                        color = MihrabGold,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 28.sp,
-                        letterSpacing = 0.08.em,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                    )
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        text = "Enter on phone",
-                        color = Color.White.copy(alpha = 0.7f),
-                        fontSize = 13.sp,
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                colors = listOf(MihrabGold, MihrabGoldBright),
+                            ),
+                            fontSize = 44.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 6.sp,
+                            fontFeatureSettings = "tnum",
+                            shadow = Shadow(
+                                color = MihrabGold.copy(alpha = 0.5f),
+                                blurRadius = 12f,
+                            ),
+                        ),
                     )
                     Spacer(Modifier.height(24.dp))
+                    Text(
+                        text = "tv.mihrab.faith",
+                        color = Color(0x80EBEBF5),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                    Spacer(Modifier.height(12.dp))
                     Text(
                         text = if (expired) "Expired — tap to refresh" else "expires in $countdown",
                         color = MihrabGold.copy(alpha = 0.6f),
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
                     )
                 }
             }
@@ -190,33 +192,34 @@ private fun PairingScreenPreview() {
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "MIHRAB",
-                    color = MihrabGold,
-                    fontSize = 14.sp,
-                    letterSpacing = 0.2.em,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Spacer(Modifier.height(18.dp))
-                Text(
                     text = "123456",
-                    color = MihrabGold,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 28.sp,
-                    letterSpacing = 0.08.em,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(Modifier.height(10.dp))
-                Text(
-                    text = "Enter on phone",
-                    color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 13.sp,
+                    style = TextStyle(
+                        brush = Brush.linearGradient(
+                            colors = listOf(MihrabGold, MihrabGoldBright),
+                        ),
+                        fontSize = 44.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 6.sp,
+                        fontFeatureSettings = "tnum",
+                        shadow = Shadow(
+                            color = MihrabGold.copy(alpha = 0.5f),
+                            blurRadius = 12f,
+                        ),
+                    ),
                 )
                 Spacer(Modifier.height(24.dp))
+                Text(
+                    text = "tv.mihrab.faith",
+                    color = Color(0x80EBEBF5),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                )
+                Spacer(Modifier.height(12.dp))
                 Text(
                     text = "expires in 4:59",
                     color = MihrabGold.copy(alpha = 0.6f),
                     fontSize = 12.sp,
+                    fontWeight = FontWeight.Normal,
                 )
             }
         }
