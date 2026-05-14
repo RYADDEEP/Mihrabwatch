@@ -124,7 +124,6 @@ fun PairingScreen(
                     runCatching { Instant.parse(s.row.expiresAt).epochSecond }.getOrDefault(0L)
                 }
                 val remaining = (expiresEpoch - nowEpoch).coerceAtLeast(0L)
-                val countdown = "%d:%02d".format(remaining / 60, remaining % 60)
                 val expired = remaining <= 0L
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -137,34 +136,34 @@ fun PairingScreen(
                             brush = Brush.linearGradient(
                                 colors = listOf(MihrabGold, MihrabGoldBright),
                             ),
-                            fontSize = 44.sp,
+                            fontSize = 32.sp,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 6.sp,
+                            letterSpacing = 3.sp,
                             fontFeatureSettings = "tnum",
                             shadow = Shadow(
                                 color = MihrabGold.copy(alpha = 0.5f),
-                                blurRadius = 12f,
+                                blurRadius = 10f,
                             ),
                         ),
                     )
-                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(20.dp))
                     Text(
-                        text = "tv.mihrab.faith",
-                        color = Color(0x80EBEBF5),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    Text(
-                        text = if (expired) "Expired — tap to refresh" else "expires in $countdown",
+                        text = if (expired) "Expired — tap to refresh" else formatExpiryMinutes(remaining),
                         color = MihrabGold.copy(alpha = 0.6f),
-                        fontSize = 12.sp,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.Normal,
                     )
                 }
             }
         }
     }
+}
+
+private fun formatExpiryMinutes(remainingSeconds: Long): String {
+    if (remainingSeconds <= 0L) return "Expired"
+    val minutes = ((remainingSeconds + 59L) / 60L).toInt()
+    val noun = if (minutes == 1) "minute" else "minutes"
+    return "Expires in $minutes $noun"
 }
 
 // PairingScreen is a monolithic stateful Composable that requires PairingRepository and
@@ -197,28 +196,21 @@ private fun PairingScreenPreview() {
                         brush = Brush.linearGradient(
                             colors = listOf(MihrabGold, MihrabGoldBright),
                         ),
-                        fontSize = 44.sp,
+                        fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
-                        letterSpacing = 6.sp,
+                        letterSpacing = 3.sp,
                         fontFeatureSettings = "tnum",
                         shadow = Shadow(
                             color = MihrabGold.copy(alpha = 0.5f),
-                            blurRadius = 12f,
+                            blurRadius = 10f,
                         ),
                     ),
                 )
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(20.dp))
                 Text(
-                    text = "tv.mihrab.faith",
-                    color = Color(0x80EBEBF5),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                )
-                Spacer(Modifier.height(12.dp))
-                Text(
-                    text = "expires in 4:59",
+                    text = "Expires in 5 minutes",
                     color = MihrabGold.copy(alpha = 0.6f),
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Normal,
                 )
             }
