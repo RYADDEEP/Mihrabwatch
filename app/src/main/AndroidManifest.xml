@@ -33,7 +33,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Session 1 stub: replaced in Session 6 with real next-prayer Tile -->
         <service
             android:name=".services.MihrabTileService"
             android:exported="true"
@@ -48,7 +47,6 @@
                 android:resource="@drawable/tile_preview" />
         </service>
 
-        <!-- Session 1 stub: replaced in Session 6 with live next-prayer data -->
         <service
             android:name=".services.MihrabComplicationDataSourceService"
             android:exported="true"
@@ -61,11 +59,11 @@
 
             <meta-data
                 android:name="android.support.wearable.complications.SUPPORTED_TYPES"
-                android:value="SHORT_TEXT" />
+                android:value="SHORT_TEXT,LONG_TEXT" />
 
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="300" />
+                android:value="60" />
         </service>
 
     </application>
