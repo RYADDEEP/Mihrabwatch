@@ -14,20 +14,14 @@ import faith.mihrab.watch.data.PairingCredentials
 import faith.mihrab.watch.data.PairingDataStore
 import faith.mihrab.watch.data.PairingRepository
 import faith.mihrab.watch.ui.screens.PairingScreen
-import faith.mihrab.watch.ui.screens.PrayerAlertScreen
 import faith.mihrab.watch.ui.screens.PrayerHomeScreen
-import faith.mihrab.watch.ui.screens.PrayerListScreen
 import faith.mihrab.watch.ui.screens.QiblaCompassScreen
-import faith.mihrab.watch.ui.screens.SettingsScreen
 import faith.mihrab.watch.ui.theme.MihrabBlack
 
 private object Routes {
     const val PAIRING = "pairing"
     const val HOME = "home"
-    const val PRAYERS = "prayers"
     const val QIBLA = "qibla"
-    const val ALERT = "alert"
-    const val SETTINGS = "settings"
 }
 
 private sealed interface CredentialState {
@@ -79,10 +73,7 @@ fun MihrabWatchApp(
                 composable(Routes.HOME) {
                     PrayerHomeScreen()
                 }
-                composable(Routes.PRAYERS) { PrayerListScreen() }
                 composable(Routes.QIBLA) { QiblaCompassScreen() }
-                composable(Routes.ALERT) { PrayerAlertScreen() }
-                composable(Routes.SETTINGS) { SettingsScreen() }
             }
         }
     }
