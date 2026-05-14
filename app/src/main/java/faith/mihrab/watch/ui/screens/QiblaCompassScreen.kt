@@ -3,11 +3,7 @@ package faith.mihrab.watch.ui.screens
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -17,11 +13,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,32 +28,36 @@ import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material3.Text
 import faith.mihrab.watch.data.QIBLA_BEARING_BANGKOK
 import faith.mihrab.watch.data.QiblaCompassRepository
-import faith.mihrab.watch.data.bearingToCardinalName
 import faith.mihrab.watch.ui.theme.MihrabBlack
 import faith.mihrab.watch.ui.theme.MihrabGold
+import faith.mihrab.watch.ui.theme.MihrabGoldBright
 import faith.mihrab.watch.ui.theme.MihrabWatchTheme
 import faith.mihrab.watch.ui.theme.MihrabWhite
 
 // Design guide spec values (MIHRAB_WATCH_DESIGN_GUIDE.md Part 5 Screen 3, round-face adapted)
 private val SafeZonePadding = 24.dp
 private val CompassDiameter = 240.dp
-private val CompassStroke = 2.dp
-private val TickLength = 8.dp
-private val TickStroke = 1.dp
+private val CompassStroke = 2.5.dp
+private val InnerGlowRingInset = 2.dp
+private val InnerGlowRingStroke = 1.dp
+private val CardinalTickLength = 10.dp
+private val CardinalTickStroke = 1.5.dp
+private val MinorTickLength = 6.dp
+private val MinorTickStroke = 1.dp
 private val ArrowLength = 80.dp
-private val ArrowHalfBase = 8.dp
+private val ArrowHalfBase = 6.dp
 private val ArrowHeight = 24.dp
 private val ArrowTipDotRadius = 3.dp
-private val ArrowGlowRadius = 14.dp
+private val ArrowTipCoreRadius = 1.5.dp
+private val ArrowGlowInnerRadius = 8.dp
+private val ArrowGlowOuterRadius = 20.dp
 private val CardinalEdgeInset = 6.dp
-private val InsideRingTextOffsetY = 36.dp
-private val InsideRingDegreesToNameSpacing = 2.dp
 
 private val CompassRingBorder = Color(0x26FFFFFF)
-private val CompassTick = Color(0x33FFFFFF)
+private val InnerGlowRingColor = Color(0x0DFFFFFF)
+private val CardinalTickColor = Color(0x66FFFFFF)
+private val MinorTickColor = Color(0x33FFFFFF)
 private val DimCardinal = Color(0x80EBEBF5)
-private val DirectionNameColor = Color(0x99EBEBF5)
-private val LocationLabelColor = Color(0x4DEBEBF5)
 
 @Composable
 fun QiblaCompassScreen(repository: QiblaCompassRepository) {
@@ -66,8 +69,6 @@ fun QiblaCompassScreen(repository: QiblaCompassRepository) {
     QiblaCompassContent(
         currentHeading = heading,
         qiblaBearing = QIBLA_BEARING_BANGKOK,
-        directionName = bearingToCardinalName(QIBLA_BEARING_BANGKOK),
-        locationLabel = "Bangkok",
     )
 }
 
@@ -75,54 +76,32 @@ fun QiblaCompassScreen(repository: QiblaCompassRepository) {
 private fun QiblaCompassContent(
     currentHeading: Float,
     qiblaBearing: Float,
-    directionName: String,
-    locationLabel: String,
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MihrabBlack)
             .padding(SafeZonePadding),
+        contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = "Qibla",
-            color = MihrabWhite,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.align(Alignment.TopCenter),
-        )
-
-        CompassWithInfo(
+        CompassRing(
             currentHeading = currentHeading,
             qiblaBearing = qiblaBearing,
-            directionName = directionName,
-            modifier = Modifier.align(Alignment.Center),
-        )
-
-        Text(
-            text = "📍 $locationLabel",
-            color = LocationLabelColor,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Normal,
-            modifier = Modifier.align(Alignment.BottomCenter),
         )
     }
 }
 
 @Composable
-private fun CompassWithInfo(
+private fun CompassRing(
     currentHeading: Float,
     qiblaBearing: Float,
-    directionName: String,
-    modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.size(CompassDiameter)) {
-        // Layer 1: Canvas — ring border, ticks, Qibla arrow
+    Box(modifier = Modifier.size(CompassDiameter)) {
         Canvas(modifier = Modifier.matchParentSize()) {
             drawCompass(currentHeading = currentHeading, qiblaBearing = qiblaBearing)
         }
 
-        // Layer 2: Cardinal letters
+        // N — primary orientation anchor, glowing halo
         Text(
             text = "N",
             color = MihrabWhite,
@@ -131,12 +110,20 @@ private fun CompassWithInfo(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = CardinalEdgeInset),
+            style = TextStyle(
+                shadow = Shadow(
+                    color = MihrabWhite.copy(alpha = 0.5f),
+                    blurRadius = 8f,
+                ),
+            ),
         )
+
+        // E/S/W — subordinate, smaller, medium weight, no glow
         Text(
             text = "E",
             color = DimCardinal,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Normal,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = CardinalEdgeInset),
@@ -144,8 +131,8 @@ private fun CompassWithInfo(
         Text(
             text = "S",
             color = DimCardinal,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Normal,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = CardinalEdgeInset),
@@ -153,34 +140,12 @@ private fun CompassWithInfo(
         Text(
             text = "W",
             color = DimCardinal,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Normal,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = CardinalEdgeInset),
         )
-
-        // Layer 3: Degrees + direction text inside the ring, lower half
-        Column(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = InsideRingTextOffsetY),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = "${qiblaBearing.toInt()}°",
-                color = MihrabGold,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Spacer(modifier = Modifier.height(InsideRingDegreesToNameSpacing))
-            Text(
-                text = directionName,
-                color = DirectionNameColor,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-            )
-        }
     }
 }
 
@@ -189,6 +154,7 @@ private fun DrawScope.drawCompass(currentHeading: Float, qiblaBearing: Float) {
     val ringRadius = size.minDimension / 2f - strokePx / 2f
     val center = Offset(size.width / 2f, size.height / 2f)
 
+    // Main ring border
     drawCircle(
         color = CompassRingBorder,
         radius = ringRadius,
@@ -196,51 +162,90 @@ private fun DrawScope.drawCompass(currentHeading: Float, qiblaBearing: Float) {
         style = Stroke(width = strokePx),
     )
 
+    // Inner faint glow ring — adds depth, very subtle
+    val innerGlowRadius = ringRadius - InnerGlowRingInset.toPx()
+    drawCircle(
+        color = InnerGlowRingColor,
+        radius = innerGlowRadius,
+        center = center,
+        style = Stroke(width = InnerGlowRingStroke.toPx()),
+    )
+
+    // Tick marks with cardinal/minor hierarchy
     val tickStart = ringRadius - strokePx / 2f
-    val tickEnd = tickStart - TickLength.toPx()
-    val tickStrokePx = TickStroke.toPx()
+    val cardinalTickLengthPx = CardinalTickLength.toPx()
+    val minorTickLengthPx = MinorTickLength.toPx()
+    val cardinalTickStrokePx = CardinalTickStroke.toPx()
+    val minorTickStrokePx = MinorTickStroke.toPx()
+
     for (i in 0 until 12) {
+        val isCardinal = i % 3 == 0  // i=0 (N), i=3 (E), i=6 (S), i=9 (W)
+        val tickLength = if (isCardinal) cardinalTickLengthPx else minorTickLengthPx
+        val tickStroke = if (isCardinal) cardinalTickStrokePx else minorTickStrokePx
+        val tickColor = if (isCardinal) CardinalTickColor else MinorTickColor
+
         rotate(degrees = i * 30f, pivot = center) {
             drawLine(
-                color = CompassTick,
+                color = tickColor,
                 start = Offset(center.x, center.y - tickStart),
-                end = Offset(center.x, center.y - tickEnd),
-                strokeWidth = tickStrokePx,
+                end = Offset(center.x, center.y - tickStart + tickLength),
+                strokeWidth = tickStroke,
             )
         }
     }
 
-    // Arrow rotates (qiblaBearing - currentHeading) clockwise from "up".
-    // At heading=0 with bearing=294, tip lands in the upper-left (NW) quadrant.
+    // Qibla arrow with gradient fill + two-layer glow + jewel tip
     val arrowRotation = qiblaBearing - currentHeading
     val arrowLengthPx = ArrowLength.toPx()
     val arrowHeightPx = ArrowHeight.toPx()
     val arrowHalfBasePx = ArrowHalfBase.toPx()
-    val glowRadiusPx = ArrowGlowRadius.toPx()
-    val tipDotRadiusPx = ArrowTipDotRadius.toPx()
+    val glowInnerPx = ArrowGlowInnerRadius.toPx()
+    val glowOuterPx = ArrowGlowOuterRadius.toPx()
+    val tipDotPx = ArrowTipDotRadius.toPx()
+    val tipCorePx = ArrowTipCoreRadius.toPx()
 
     rotate(degrees = arrowRotation, pivot = center) {
         val tip = Offset(center.x, center.y - arrowLengthPx)
         val baseLeft = Offset(center.x - arrowHalfBasePx, center.y - arrowLengthPx + arrowHeightPx)
         val baseRight = Offset(center.x + arrowHalfBasePx, center.y - arrowLengthPx + arrowHeightPx)
 
+        // Outer halo — soft bloom around tip
         drawCircle(
-            color = MihrabGold.copy(alpha = 0.4f),
-            radius = glowRadiusPx,
+            color = MihrabGold.copy(alpha = 0.2f),
+            radius = glowOuterPx,
+            center = tip,
+        )
+        // Inner glow — brighter halo
+        drawCircle(
+            color = MihrabGold.copy(alpha = 0.6f),
+            radius = glowInnerPx,
             center = tip,
         )
 
+        // Arrow body — gradient from MihrabGold (base) to MihrabGoldBright (tip)
+        val arrowBrush = Brush.linearGradient(
+            colors = listOf(MihrabGold, MihrabGoldBright),
+            start = Offset(center.x, center.y - arrowLengthPx + arrowHeightPx),  // base
+            end = Offset(center.x, center.y - arrowLengthPx),                    // tip
+        )
         val path = Path().apply {
             moveTo(tip.x, tip.y)
             lineTo(baseRight.x, baseRight.y)
             lineTo(baseLeft.x, baseLeft.y)
             close()
         }
-        drawPath(path = path, color = MihrabGold)
+        drawPath(path = path, brush = arrowBrush)
 
+        // Tip dot — 6dp full gold
         drawCircle(
             color = MihrabGold,
-            radius = tipDotRadiusPx,
+            radius = tipDotPx,
+            center = tip,
+        )
+        // Tip jewel core — 3dp pure white inside the gold dot
+        drawCircle(
+            color = MihrabWhite,
+            radius = tipCorePx,
             center = tip,
         )
     }
@@ -257,8 +262,6 @@ private fun QiblaCompassPreview() {
         QiblaCompassContent(
             currentHeading = 0f,
             qiblaBearing = QIBLA_BEARING_BANGKOK,
-            directionName = "West-Northwest",
-            locationLabel = "Bangkok",
         )
     }
 }
