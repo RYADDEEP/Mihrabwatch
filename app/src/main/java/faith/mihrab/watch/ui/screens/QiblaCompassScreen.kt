@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -46,8 +47,8 @@ private val ArrowHeight = 24.dp
 private val ArrowTipDotRadius = 3.dp
 private val ArrowGlowRadius = 14.dp
 private val CardinalEdgeInset = 6.dp
-private val CompassToInfoSpacing = 16.dp
-private val DegreesToNameSpacing = 4.dp
+private val InsideRingTextOffsetY = 36.dp
+private val InsideRingDegreesToNameSpacing = 2.dp
 
 private val CompassRingBorder = Color(0x26FFFFFF)
 private val CompassTick = Color(0x33FFFFFF)
@@ -91,26 +92,12 @@ private fun QiblaCompassContent(
             modifier = Modifier.align(Alignment.TopCenter),
         )
 
-        Column(
+        CompassWithInfo(
+            currentHeading = currentHeading,
+            qiblaBearing = qiblaBearing,
+            directionName = directionName,
             modifier = Modifier.align(Alignment.Center),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            CompassRing(currentHeading = currentHeading, qiblaBearing = qiblaBearing)
-            Spacer(modifier = Modifier.height(CompassToInfoSpacing))
-            Text(
-                text = "${qiblaBearing.toInt()}°",
-                color = MihrabGold,
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Spacer(modifier = Modifier.height(DegreesToNameSpacing))
-            Text(
-                text = directionName,
-                color = DirectionNameColor,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-            )
-        }
+        )
 
         Text(
             text = "📍 $locationLabel",
@@ -123,11 +110,19 @@ private fun QiblaCompassContent(
 }
 
 @Composable
-private fun CompassRing(currentHeading: Float, qiblaBearing: Float) {
-    Box(modifier = Modifier.size(CompassDiameter)) {
+private fun CompassWithInfo(
+    currentHeading: Float,
+    qiblaBearing: Float,
+    directionName: String,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.size(CompassDiameter)) {
+        // Layer 1: Canvas — ring border, ticks, Qibla arrow
         Canvas(modifier = Modifier.matchParentSize()) {
             drawCompass(currentHeading = currentHeading, qiblaBearing = qiblaBearing)
         }
+
+        // Layer 2: Cardinal letters
         Text(
             text = "N",
             color = MihrabWhite,
@@ -164,6 +159,28 @@ private fun CompassRing(currentHeading: Float, qiblaBearing: Float) {
                 .align(Alignment.CenterStart)
                 .padding(start = CardinalEdgeInset),
         )
+
+        // Layer 3: Degrees + direction text inside the ring, lower half
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = InsideRingTextOffsetY),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = "${qiblaBearing.toInt()}°",
+                color = MihrabGold,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(modifier = Modifier.height(InsideRingDegreesToNameSpacing))
+            Text(
+                text = directionName,
+                color = DirectionNameColor,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+            )
+        }
     }
 }
 
