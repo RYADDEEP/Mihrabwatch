@@ -48,8 +48,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 // Design guide spec values (MIHRAB_WATCH_DESIGN_GUIDE.md Part 5 Screen 1, round-face adapted)
 private val SafeZonePadding = 24.dp
@@ -66,9 +64,7 @@ private const val DashCountdown = "—"
 fun PrayerHomeScreen(payloadFlow: Flow<SyncPayloadState>) {
     val context = LocalContext.current
     val state by payloadFlow.collectAsState(initial = SyncPayloadState.Loading)
-    val now by rememberCurrentTime()
     val nowInstant by rememberCurrentInstant()
-    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
 
     // Resolve the payload to render: Ready directly, Error falls back to last-known-good.
     val payload: SyncPayload? = when (val s = state) {
@@ -104,17 +100,13 @@ fun PrayerHomeScreen(payloadFlow: Flow<SyncPayloadState>) {
                 runCatching { LocalDate.parse(d) }.getOrNull()
                     ?.isBefore(LocalDate.now(zone)) == true
             } ?: false
-            val caption = buildList {
-                payload.location?.displayName?.takeIf { it.isNotBlank() }?.let(::add)
-                if (stale && payload.lastUpdated != null) {
-                    add("Last updated " + (formatLocalTime(
-                        payload.lastUpdated, payload.timezone,
-                    ) ?: "—"))
-                }
-            }.joinToString(" · ").ifBlank { null }
+            // Ready state: no caption. Error state with lastGood: show "Last updated" only.
+            val caption = if (state !is SyncPayloadState.Ready && stale && payload.lastUpdated != null) {
+                "Last updated " + (formatLocalTime(payload.lastUpdated, payload.timezone) ?: "—")
+            } else null
 
             PrayerHomeContent(
-                timeText = now.format(timeFormatter),
+                timeText = formatLocalTime(next?.time, payload.timezone) ?: DashTime,
                 prayerName = localizedPrayerName(context, next?.name).ifBlank { DashPrayer },
                 countdown = countdownLong(remaining),
                 progress = ringProgress(payload.lastUpdated, next?.time, nowInstant),
@@ -226,18 +218,6 @@ private fun ProgressRing(progress: Float) {
 }
 
 @Composable
-private fun rememberCurrentTime(): State<LocalTime> {
-    val time = remember { mutableStateOf(LocalTime.now()) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            time.value = LocalTime.now()
-            delay(1000L)
-        }
-    }
-    return time
-}
-
-@Composable
 private fun rememberCurrentInstant(): State<Instant> {
     val instant = remember { mutableStateOf(Instant.now()) }
     LaunchedEffect(Unit) {
@@ -264,7 +244,7 @@ private fun PrayerHomePreview() {
             prayerName = "FAJR",
             countdown = "in 23m",
             progress = 0.7f,
-            caption = "Bangkok, Thailand",
+            caption = null,
         )
     }
 }
