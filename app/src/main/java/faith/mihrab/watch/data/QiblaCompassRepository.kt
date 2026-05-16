@@ -12,10 +12,6 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-// Hardcoded Qibla bearing from Bangkok (13.7563°N, 100.5018°E) to Mecca (21.4225°N, 39.8262°E).
-// Phase 6+: replace with dynamic computation from phone-provided location via paired device.
-const val QIBLA_BEARING_BANGKOK = 294f
-
 private const val SMOOTHING_ALPHA = 0.15f
 
 private val CARDINAL_NAMES = listOf(

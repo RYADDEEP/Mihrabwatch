@@ -8,4 +8,17 @@
     <string name="screen_qibla">Qibla</string>
     <string name="screen_alert">Prayer Alert</string>
     <string name="screen_settings">Settings</string>
+
+    <!-- Prayer names (locale-independent ids resolved from sync_payload) -->
+    <string name="prayer_fajr">Fajr</string>
+    <string name="prayer_sunrise">Sunrise</string>
+    <string name="prayer_dhuhr">Dhuhr</string>
+    <string name="prayer_asr">Asr</string>
+    <string name="prayer_maghrib">Maghrib</string>
+    <string name="prayer_isha">Isha</string>
+
+    <!-- Sync states -->
+    <string name="sync_waiting">Waiting for sync from phone…</string>
+    <string name="sync_unsupported">Update Mihrab Watch to see all features</string>
+    <string name="sync_qibla_missing">Sync your phone</string>
 </resources>

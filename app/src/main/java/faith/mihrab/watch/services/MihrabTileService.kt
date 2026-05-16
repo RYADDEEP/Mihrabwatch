@@ -21,23 +21,30 @@ import androidx.wear.tiles.RequestBuilders.ResourcesRequest
 import androidx.wear.tiles.RequestBuilders.TileRequest
 import androidx.wear.tiles.TileBuilders.Tile
 import androidx.wear.tiles.TileService
-import com.google.common.util.concurrent.Futures
+import androidx.concurrent.futures.CallbackToFutureAdapter
 import com.google.common.util.concurrent.ListenableFuture
-import faith.mihrab.watch.data.NextPrayer
-import faith.mihrab.watch.data.NextPrayerProvider
+import faith.mihrab.watch.data.NextPrayerView
+import faith.mihrab.watch.data.SyncPayloadCache
+import faith.mihrab.watch.data.nextPrayerView
+import kotlinx.coroutines.runBlocking
 
 class MihrabTileService : TileService() {
 
     override fun onTileRequest(
         requestParams: TileRequest,
     ): ListenableFuture<Tile> {
-        val prayer = NextPrayerProvider.current()
+        val prayer = runBlocking {
+            nextPrayerView(applicationContext, SyncPayloadCache(applicationContext).load())
+        }
         val tile = Tile.Builder()
             .setResourcesVersion(RESOURCES_VERSION)
             .setFreshnessIntervalMillis(60_000L)
             .setTileTimeline(Timeline.fromLayoutElement(rootLayout(prayer)))
             .build()
-        return Futures.immediateFuture(tile)
+        return CallbackToFutureAdapter.getFuture { completer ->
+            completer.set(tile)
+            "onTileRequest"
+        }
     }
 
     override fun onTileResourcesRequest(
@@ -46,10 +53,13 @@ class MihrabTileService : TileService() {
         val resources = Resources.Builder()
             .setVersion(RESOURCES_VERSION)
             .build()
-        return Futures.immediateFuture(resources)
+        return CallbackToFutureAdapter.getFuture { completer ->
+            completer.set(resources)
+            "onTileResourcesRequest"
+        }
     }
 
-    private fun rootLayout(p: NextPrayer): Box =
+    private fun rootLayout(p: NextPrayerView): Box =
         Box.Builder()
             .setWidth(expand())
             .setHeight(expand())

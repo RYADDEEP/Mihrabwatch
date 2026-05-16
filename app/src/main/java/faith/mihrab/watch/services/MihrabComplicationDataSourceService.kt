@@ -7,18 +7,26 @@ import androidx.wear.watchface.complications.data.PlainComplicationText
 import androidx.wear.watchface.complications.data.ShortTextComplicationData
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
-import faith.mihrab.watch.data.NextPrayer
-import faith.mihrab.watch.data.NextPrayerProvider
+import faith.mihrab.watch.data.NextPrayerView
+import faith.mihrab.watch.data.SyncPayloadCache
+import faith.mihrab.watch.data.nextPrayerView
 
 class MihrabComplicationDataSourceService : SuspendingComplicationDataSourceService() {
 
+    private val previewData = NextPrayerView(
+        name = "Maghrib",
+        time = "18:22",
+        countdownShort = "20m",
+        countdownLong = "in 20 minutes",
+    )
+
     override fun getPreviewData(type: ComplicationType): ComplicationData? =
-        build(type, NextPrayerProvider.current())
+        build(type, previewData)
 
     override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData? =
-        build(request.complicationType, NextPrayerProvider.current())
+        build(request.complicationType, nextPrayerView(applicationContext, SyncPayloadCache(applicationContext).load()))
 
-    private fun build(type: ComplicationType, p: NextPrayer): ComplicationData? {
+    private fun build(type: ComplicationType, p: NextPrayerView): ComplicationData? {
         val description = PlainComplicationText
             .Builder("Mihrab next prayer ${p.name} ${p.countdownLong}")
             .build()

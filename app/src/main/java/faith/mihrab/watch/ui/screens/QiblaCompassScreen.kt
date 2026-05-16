@@ -20,19 +20,25 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import faith.mihrab.watch.data.QIBLA_BEARING_BANGKOK
+import faith.mihrab.watch.R
 import faith.mihrab.watch.data.QiblaCompassRepository
+import faith.mihrab.watch.data.SyncPayload
+import faith.mihrab.watch.data.SyncPayloadState
 import faith.mihrab.watch.ui.theme.MihrabBlack
 import faith.mihrab.watch.ui.theme.MihrabGold
 import faith.mihrab.watch.ui.theme.MihrabGoldBright
 import faith.mihrab.watch.ui.theme.MihrabWatchTheme
 import faith.mihrab.watch.ui.theme.MihrabWhite
+import kotlinx.coroutines.flow.Flow
 
 // Design guide spec values (MIHRAB_WATCH_DESIGN_GUIDE.md Part 5 Screen 3, round-face adapted)
 private val SafeZonePadding = 24.dp
@@ -60,22 +66,40 @@ private val MinorTickColor = Color(0x33FFFFFF)
 private val DimCardinal = Color(0x80EBEBF5)
 
 @Composable
-fun QiblaCompassScreen(repository: QiblaCompassRepository) {
+fun QiblaCompassScreen(
+    repository: QiblaCompassRepository,
+    payloadFlow: Flow<SyncPayloadState>?,
+) {
     val heading by repository.heading.collectAsState()
     DisposableEffect(repository) {
         repository.start()
         onDispose { repository.stop() }
     }
+
+    val state = payloadFlow
+        ?.collectAsState(initial = SyncPayloadState.Loading)
+        ?.value
+    // Best-effort across states: a bearing is rendered whenever any payload carries one,
+    // including a newer-than-supported payload (graceful degradation, schema §5/§8.C).
+    val payload: SyncPayload? = when (state) {
+        is SyncPayloadState.Ready -> state.payload
+        is SyncPayloadState.Error -> state.lastGood
+        is SyncPayloadState.UnsupportedVersion -> state.payload
+        else -> null
+    }
+    // Graceful degradation (schema §5/§8.D): render the bearing whenever we have one.
+    val qiblaBearing = payload?.qibla?.bearingDegrees?.toFloat()
+
     QiblaCompassContent(
         currentHeading = heading,
-        qiblaBearing = QIBLA_BEARING_BANGKOK,
+        qiblaBearing = qiblaBearing,
     )
 }
 
 @Composable
 private fun QiblaCompassContent(
     currentHeading: Float,
-    qiblaBearing: Float,
+    qiblaBearing: Float?,
 ) {
     Box(
         modifier = Modifier
@@ -88,13 +112,21 @@ private fun QiblaCompassContent(
             currentHeading = currentHeading,
             qiblaBearing = qiblaBearing,
         )
+        if (qiblaBearing == null) {
+            Text(
+                text = stringResource(R.string.sync_qibla_missing),
+                color = MihrabWhite,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
 
 @Composable
 private fun CompassRing(
     currentHeading: Float,
-    qiblaBearing: Float,
+    qiblaBearing: Float?,
 ) {
     Box(modifier = Modifier.size(CompassDiameter)) {
         Canvas(modifier = Modifier.matchParentSize()) {
@@ -149,7 +181,7 @@ private fun CompassRing(
     }
 }
 
-private fun DrawScope.drawCompass(currentHeading: Float, qiblaBearing: Float) {
+private fun DrawScope.drawCompass(currentHeading: Float, qiblaBearing: Float?) {
     val strokePx = CompassStroke.toPx()
     val ringRadius = size.minDimension / 2f - strokePx / 2f
     val center = Offset(size.width / 2f, size.height / 2f)
@@ -193,6 +225,9 @@ private fun DrawScope.drawCompass(currentHeading: Float, qiblaBearing: Float) {
             )
         }
     }
+
+    // No bearing from the phone yet — draw ring + ticks only, the screen shows a sync prompt.
+    if (qiblaBearing == null) return
 
     // Qibla arrow with gradient fill + two-layer glow + jewel tip
     val arrowRotation = qiblaBearing - currentHeading
@@ -261,7 +296,7 @@ private fun QiblaCompassPreview() {
     MihrabWatchTheme {
         QiblaCompassContent(
             currentHeading = 0f,
-            qiblaBearing = QIBLA_BEARING_BANGKOK,
+            qiblaBearing = 294f,
         )
     }
 }

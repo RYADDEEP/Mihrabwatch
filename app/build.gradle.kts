@@ -104,6 +104,9 @@ dependencies {
     // Local credential storage (pairingId + pairedUserId after successful pair)
     implementation(libs.androidx.datastore.preferences)
 
+    // ListenableFuture helper for Tile service (all variants — Guava was debug-only via tiles-renderer)
+    implementation(libs.androidx.concurrent.futures)
+
     // Serialization + coroutines (Supabase-kt requirements — pinned explicitly)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)

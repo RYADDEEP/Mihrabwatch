@@ -18,6 +18,8 @@ import faith.mihrab.watch.data.PairingCredentials
 import faith.mihrab.watch.data.PairingDataStore
 import faith.mihrab.watch.data.PairingRepository
 import faith.mihrab.watch.data.QiblaCompassRepository
+import faith.mihrab.watch.data.SyncPayloadCache
+import faith.mihrab.watch.data.SyncPayloadRepository
 import faith.mihrab.watch.ui.screens.PairingScreen
 import faith.mihrab.watch.ui.screens.PrayerHomeScreen
 import faith.mihrab.watch.ui.screens.QiblaCompassScreen
@@ -79,14 +81,29 @@ fun MihrabWatchApp(
                     val qiblaRepository = remember(context) {
                         QiblaCompassRepository(context.applicationContext)
                     }
+                    val pairingId = (credentialState as? CredentialState.Paired)?.creds?.pairingId
+                    val syncRepository = remember(context) {
+                        SyncPayloadRepository(
+                            context.applicationContext,
+                            SyncPayloadCache(context.applicationContext),
+                        )
+                    }
+                    val payloadFlow = remember(syncRepository, pairingId) {
+                        pairingId?.let { syncRepository.observe(it) }
+                    }
                     val pagerState = rememberPagerState(pageCount = { 2 })
                     HorizontalPager(
                         state = pagerState,
                         modifier = Modifier.fillMaxSize(),
                     ) { page ->
                         when (page) {
-                            0 -> PrayerHomeScreen()
-                            1 -> QiblaCompassScreen(repository = qiblaRepository)
+                            0 -> if (payloadFlow != null) {
+                                PrayerHomeScreen(payloadFlow = payloadFlow)
+                            }
+                            1 -> QiblaCompassScreen(
+                                repository = qiblaRepository,
+                                payloadFlow = payloadFlow,
+                            )
                             else -> Unit
                         }
                     }
