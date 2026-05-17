@@ -57,7 +57,7 @@ fun remainingMillis(nextIso: String?, now: Instant): Long? =
 
 fun countdownShort(remainingMs: Long?): String {
     if (remainingMs == null) return "—"
-    if (remainingMs <= 0L) return "now"
+    if (remainingMs <= 0L) return "0m"
     val minutes = (remainingMs / 60_000L).coerceAtLeast(1L)
     val hours = minutes / 60L
     val mins = minutes % 60L
@@ -66,7 +66,7 @@ fun countdownShort(remainingMs: Long?): String {
 
 fun countdownLong(remainingMs: Long?): String {
     if (remainingMs == null) return "—"
-    if (remainingMs <= 0L) return "now"
+    if (remainingMs <= 0L) return "in 0m"
     val minutes = (remainingMs / 60_000L).coerceAtLeast(1L)
     val hours = minutes / 60L
     val mins = minutes % 60L

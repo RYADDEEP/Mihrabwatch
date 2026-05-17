@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +54,15 @@ fun PairingScreen(
     var state by remember { mutableStateOf<PairingState>(PairingState.Loading) }
     var nowEpoch by remember { mutableLongStateOf(Instant.now().epochSecond) }
     var attempt by remember { mutableIntStateOf(0) }
+    var autoRefreshCount by remember { mutableIntStateOf(0) }
+
+    val activeExpired = remember(state, nowEpoch) {
+        (state as? PairingState.Active)
+            ?.row?.expiresAt
+            ?.let { runCatching { Instant.parse(it).epochSecond }.getOrNull() }
+            ?.let { nowEpoch >= it }
+            ?: false
+    }
 
     LaunchedEffect(attempt) {
         state = PairingState.Loading
@@ -85,6 +95,13 @@ fun PairingScreen(
         while (true) {
             delay(1000)
             nowEpoch = Instant.now().epochSecond
+        }
+    }
+
+    LaunchedEffect(activeExpired) {
+        if (activeExpired && autoRefreshCount < 5) {
+            autoRefreshCount += 1
+            attempt += 1
         }
     }
 
@@ -125,21 +142,24 @@ fun PairingScreen(
                 }
                 val remaining = (expiresEpoch - nowEpoch).coerceAtLeast(0L)
                 val expired = remaining <= 0L
+                val capReached = expired && autoRefreshCount >= 5
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    modifier = if (expired) Modifier.clickable { attempt += 1 } else Modifier,
+                    modifier = if (capReached) Modifier.clickable { attempt += 1 } else Modifier,
                 ) {
                     Text(
                         text = s.row.pairingCode,
+                        maxLines = 1,
+                        softWrap = false,
                         style = TextStyle(
                             brush = Brush.linearGradient(
                                 colors = listOf(MihrabGold, MihrabGoldBright),
                             ),
-                            fontSize = 32.sp,
+                            fontSize = 28.sp,
+                            fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 3.sp,
-                            fontFeatureSettings = "tnum",
+                            letterSpacing = 4.sp,
                             shadow = Shadow(
                                 color = MihrabGold.copy(alpha = 0.5f),
                                 blurRadius = 10f,
@@ -148,7 +168,11 @@ fun PairingScreen(
                     )
                     Spacer(Modifier.height(20.dp))
                     Text(
-                        text = if (expired) "Expired — tap to refresh" else formatExpiryMinutes(remaining),
+                        text = when {
+                            capReached -> "Expired — tap to refresh"
+                            expired -> ""
+                            else -> formatExpiryMinutes(remaining)
+                        },
                         color = MihrabGold.copy(alpha = 0.6f),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Normal,
@@ -191,15 +215,17 @@ private fun PairingScreenPreview() {
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "123456",
+                    text = "A3BK9M2X",
+                    maxLines = 1,
+                    softWrap = false,
                     style = TextStyle(
                         brush = Brush.linearGradient(
                             colors = listOf(MihrabGold, MihrabGoldBright),
                         ),
-                        fontSize = 32.sp,
+                        fontSize = 28.sp,
+                        fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
-                        letterSpacing = 3.sp,
-                        fontFeatureSettings = "tnum",
+                        letterSpacing = 4.sp,
                         shadow = Shadow(
                             color = MihrabGold.copy(alpha = 0.5f),
                             blurRadius = 10f,
