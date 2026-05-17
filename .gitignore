@@ -35,3 +35,6 @@ Thumbs.db
 
 # Gradle daemon JVM config (auto-generated, machine-specific)
 gradle/gradle-daemon-jvm.properties
+
+# Claude Code Desktop App session metadata
+.claude/
