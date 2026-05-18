@@ -19,6 +19,7 @@ datastore = "1.1.1"
 concurrentFutures = "1.2.0"
 kotlinxSerialization = "1.7.3"
 kotlinxCoroutines = "1.9.0"
+adhan2 = "0.0.6"
 
 [libraries]
 # Core
@@ -67,6 +68,9 @@ androidx-concurrent-futures = { module = "androidx.concurrent:concurrent-futures
 # Serialization + coroutines (Supabase-kt transitive deps — pin explicitly so versions are visible)
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
+
+# Prayer time computation (Option B — local adhan calculation)
+adhan2 = { module = "com.batoulapps.adhan:adhan2", version.ref = "adhan2" }
 
 # Test
 junit = { module = "junit:junit", version.ref = "junit" }

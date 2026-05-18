@@ -101,6 +101,9 @@ dependencies {
     implementation(libs.supabase.realtime)
     implementation(libs.ktor.client.okhttp)
 
+    // Prayer time computation (Option B — local adhan calculation)
+    implementation(libs.adhan2)
+
     // Local credential storage (pairingId + pairedUserId after successful pair)
     implementation(libs.androidx.datastore.preferences)
 
