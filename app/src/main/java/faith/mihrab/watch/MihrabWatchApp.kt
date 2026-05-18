@@ -1,5 +1,6 @@
 package faith.mihrab.watch
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +44,10 @@ fun MihrabWatchApp(
 ) {
     val credentialState by produceState<CredentialState>(CredentialState.Loading) {
         pairingDataStore.credentialsFlow.collect { creds ->
+            Log.d(
+                "Pairing",
+                "MihrabWatchApp: credentialState -> ${if (creds != null) "Paired" else "Unpaired"}",
+            )
             value = if (creds != null) CredentialState.Paired(creds) else CredentialState.Unpaired
         }
     }
@@ -70,6 +75,10 @@ fun MihrabWatchApp(
                         repository = pairingRepository,
                         dataStore = pairingDataStore,
                         onPaired = {
+                            Log.d(
+                                "Pairing",
+                                "MihrabWatchApp: nav transition from=PairingScreen to=PrayerHome reason=paired",
+                            )
                             navController.navigate(Routes.MAIN) {
                                 popUpTo(Routes.PAIRING) { inclusive = true }
                             }

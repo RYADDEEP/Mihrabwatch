@@ -1,6 +1,7 @@
 package faith.mihrab.watch.data
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -20,6 +21,10 @@ class PairingDataStore(private val context: Context) {
     val credentialsFlow: Flow<PairingCredentials?> = context.pairingPreferences.data.map { prefs ->
         val id = prefs[pairingIdKey]
         val user = prefs[pairedUserIdKey]
+        Log.d(
+            "Pairing",
+            "PairingDataStore: read pairing_id=$id creds=${if (id != null && user != null) "present" else "null"}",
+        )
         if (id != null && user != null) PairingCredentials(id, user) else null
     }
 
@@ -28,5 +33,9 @@ class PairingDataStore(private val context: Context) {
             prefs[pairingIdKey] = pairingId
             prefs[pairedUserIdKey] = pairedUserId
         }
+        Log.d(
+            "Pairing",
+            "PairingDataStore: write pairing_id=$pairingId paired_user_id=$pairedUserId",
+        )
     }
 }

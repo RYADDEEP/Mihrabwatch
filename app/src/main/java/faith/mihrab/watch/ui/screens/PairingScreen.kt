@@ -1,5 +1,6 @@
 package faith.mihrab.watch.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,7 @@ import faith.mihrab.watch.data.PairingRow
 import faith.mihrab.watch.ui.theme.MihrabBlack
 import faith.mihrab.watch.ui.theme.MihrabGold
 import faith.mihrab.watch.ui.theme.MihrabGoldBright
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import java.time.Instant
 
@@ -69,7 +71,9 @@ fun PairingScreen(
         try {
             val row = repository.createPairing()
             state = PairingState.Active(row)
-        } catch (_: Throwable) {
+        } catch (t: Throwable) {
+            if (t is CancellationException) throw t
+            Log.d("Pairing", "PairingScreen: createPairing error=${t.message}")
             state = PairingState.Error
         }
     }
@@ -81,11 +85,17 @@ fun PairingScreen(
                 repository.observePairing(current.row.id).collect { update ->
                     if (update.pairedDeviceType != "watch") return@collect
                     if (update.status == "paired" && update.pairedUserId != null) {
+                        Log.d(
+                            "Pairing",
+                            "PairingScreen: paired update id=${update.id} -> savePairing + onPaired",
+                        )
                         dataStore.savePairing(update.id, update.pairedUserId)
                         onPaired()
                     }
                 }
-            } catch (_: Throwable) {
+            } catch (t: Throwable) {
+                if (t is CancellationException) throw t
+                Log.d("Pairing", "PairingScreen: observePairing collect error=${t.message}")
                 state = PairingState.Error
             }
         }
@@ -101,6 +111,7 @@ fun PairingScreen(
     LaunchedEffect(activeExpired) {
         if (activeExpired && autoRefreshCount < 5) {
             autoRefreshCount += 1
+            Log.d("Pairing", "AutoRefresh: attempt count=$autoRefreshCount reason=ttl_expired")
             attempt += 1
         }
     }
