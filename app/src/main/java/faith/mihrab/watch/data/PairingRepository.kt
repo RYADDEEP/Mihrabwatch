@@ -2,6 +2,7 @@ package faith.mihrab.watch.data
 
 import android.util.Log
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.channel
@@ -165,6 +166,13 @@ class PairingRepository {
             supabase.realtime.removeChannel(channel)
         }
     }
+
+    suspend fun fetchPairing(id: String): PairingRow? =
+        supabase.from("device_pairings")
+            .select(Columns.ALL) {
+                filter { eq("id", id) }
+            }
+            .decodeSingleOrNull<PairingRow>()
 
     private fun parseServerInstant(value: String): Instant? = runCatching {
         OffsetDateTime.parse(value).toInstant()

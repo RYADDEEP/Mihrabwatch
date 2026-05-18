@@ -39,6 +39,9 @@ import faith.mihrab.watch.ui.theme.MihrabGold
 import faith.mihrab.watch.ui.theme.MihrabGoldBright
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.minutes
 import java.time.Instant
 
 private sealed interface PairingState {
@@ -66,6 +69,19 @@ fun PairingScreen(
             ?: false
     }
 
+    suspend fun handlePaired(row: PairingRow, source: String) {
+        if (row.pairedDeviceType != "watch") return
+        val userId = row.pairedUserId
+        if (row.status == "paired" && userId != null) {
+            Log.d(
+                "Pairing",
+                "PairingScreen: handlePaired source=$source id=${row.id} -> savePairing + onPaired",
+            )
+            dataStore.savePairing(row.id, userId)
+            onPaired()
+        }
+    }
+
     LaunchedEffect(attempt) {
         state = PairingState.Loading
         try {
@@ -83,21 +99,57 @@ fun PairingScreen(
         if (current is PairingState.Active) {
             try {
                 repository.observePairing(current.row.id).collect { update ->
-                    if (update.pairedDeviceType != "watch") return@collect
-                    if (update.status == "paired" && update.pairedUserId != null) {
-                        Log.d(
-                            "Pairing",
-                            "PairingScreen: paired update id=${update.id} -> savePairing + onPaired",
-                        )
-                        dataStore.savePairing(update.id, update.pairedUserId)
-                        onPaired()
-                    }
+                    handlePaired(update, source = "realtime")
                 }
             } catch (t: Throwable) {
                 if (t is CancellationException) throw t
                 Log.d("Pairing", "PairingScreen: observePairing collect error=${t.message}")
                 state = PairingState.Error
             }
+        }
+    }
+
+    LaunchedEffect(state) {
+        val current = state
+        if (current is PairingState.Active) {
+            val id = current.row.id
+            var attemptN = 0
+            var reason = "timeout"
+            Log.d("Pairing", "Polling: started pairing_id=$id interval=2s timeout=5min")
+            try {
+                withTimeoutOrNull(5.minutes) {
+                    while (isActive) {
+                        delay(2_000L)
+                        attemptN += 1
+                        Log.d("Pairing", "Polling: tick attempt=$attemptN pairing_id=$id")
+                        val row = runCatching { repository.fetchPairing(id) }.getOrNull()
+                        if (row != null &&
+                            row.status == "paired" &&
+                            row.pairedUserId != null &&
+                            row.pairedDeviceType == "watch"
+                        ) {
+                            Log.d(
+                                "Pairing",
+                                "Polling: detected status=paired pairing_id=$id attempt=$attemptN",
+                            )
+                            reason = "paired"
+                            handlePaired(row, source = "polling")
+                            return@withTimeoutOrNull
+                        }
+                    }
+                }
+                if (reason == "timeout") {
+                    Log.d("Pairing", "Polling: timeout reached after 5min pairing_id=$id")
+                }
+            } catch (t: Throwable) {
+                if (t is CancellationException) {
+                    Log.d("Pairing", "Polling: cancelled pairing_id=$id reason=dispose")
+                    throw t
+                }
+                Log.d("Pairing", "Polling: error pairing_id=$id error=${t.message}")
+                reason = "error"
+            }
+            Log.d("Pairing", "Polling: cancelled pairing_id=$id reason=$reason")
         }
     }
 
