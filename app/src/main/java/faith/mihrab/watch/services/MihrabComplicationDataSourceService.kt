@@ -10,6 +10,7 @@ import androidx.wear.watchface.complications.datasource.SuspendingComplicationDa
 import faith.mihrab.watch.data.NextPrayerView
 import faith.mihrab.watch.data.SyncPayloadCache
 import faith.mihrab.watch.data.nextPrayerView
+import faith.mihrab.watch.data.resolveNextPrayer
 
 class MihrabComplicationDataSourceService : SuspendingComplicationDataSourceService() {
 
@@ -23,8 +24,13 @@ class MihrabComplicationDataSourceService : SuspendingComplicationDataSourceServ
     override fun getPreviewData(type: ComplicationType): ComplicationData? =
         build(type, previewData)
 
-    override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData? =
-        build(request.complicationType, nextPrayerView(applicationContext, SyncPayloadCache(applicationContext).load()))
+    override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData? {
+        val payload = SyncPayloadCache(applicationContext).load()
+        return build(
+            request.complicationType,
+            nextPrayerView(applicationContext, payload?.copy(nextPrayer = resolveNextPrayer(payload))),
+        )
+    }
 
     private fun build(type: ComplicationType, p: NextPrayerView): ComplicationData? {
         val description = PlainComplicationText

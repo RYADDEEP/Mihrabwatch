@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,6 +37,7 @@ import faith.mihrab.watch.data.countdownLong
 import faith.mihrab.watch.data.formatLocalTime
 import faith.mihrab.watch.data.localizedPrayerName
 import faith.mihrab.watch.data.remainingMillis
+import faith.mihrab.watch.data.resolveNextPrayer
 import faith.mihrab.watch.data.resolveZone
 import faith.mihrab.watch.data.ringProgress
 import faith.mihrab.watch.ui.theme.MihrabBlack
@@ -46,8 +48,11 @@ import faith.mihrab.watch.ui.theme.MihrabWatchTheme
 import faith.mihrab.watch.ui.theme.MihrabWhite
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 // Design guide spec values (MIHRAB_WATCH_DESIGN_GUIDE.md Part 5 Screen 1, round-face adapted)
 private val SafeZonePadding = 24.dp
@@ -73,6 +78,9 @@ fun PrayerHomeScreen(payloadFlow: Flow<SyncPayloadState>) {
         else -> null
     }
 
+    val zone = resolveZone(payload?.timezone)
+    val dayRollover by rememberDayRollover(zone)
+
     when {
         state is SyncPayloadState.Empty ->
             MessageScreen(stringResource(R.string.sync_waiting))
@@ -93,9 +101,8 @@ fun PrayerHomeScreen(payloadFlow: Flow<SyncPayloadState>) {
             )
 
         else -> {
-            val next = payload.nextPrayer
+            val next = remember(payload, nowInstant, dayRollover) { resolveNextPrayer(payload) }
             val remaining = remainingMillis(next?.time, nowInstant)
-            val zone = resolveZone(payload.timezone)
             val stale = payload.date?.let { d ->
                 runCatching { LocalDate.parse(d) }.getOrNull()
                     ?.isBefore(LocalDate.now(zone)) == true
@@ -227,6 +234,24 @@ private fun rememberCurrentInstant(): State<Instant> {
         }
     }
     return instant
+}
+
+// Fires at every local-time midnight so the resolver recomputes the new day's prayers
+// without an app restart (service path only — the fallback path's rollover comes from the
+// phone pushing a fresh payload at 00:00).
+@Composable
+private fun rememberDayRollover(zone: ZoneId): State<Int> {
+    val tick = remember(zone) { mutableIntStateOf(0) }
+    LaunchedEffect(zone) {
+        while (true) {
+            val now = ZonedDateTime.now(zone)
+            val nextMidnight = now.toLocalDate().plusDays(1).atStartOfDay(zone)
+            val delayMs = Duration.between(now, nextMidnight).toMillis().coerceAtLeast(1_000L)
+            delay(delayMs)
+            tick.intValue += 1
+        }
+    }
+    return tick
 }
 
 // device id literal equivalent to androidx.wear.tooling.preview.devices.WearDevices.LARGE_ROUND

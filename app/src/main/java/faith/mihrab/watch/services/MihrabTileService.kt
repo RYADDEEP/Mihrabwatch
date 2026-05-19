@@ -26,6 +26,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import faith.mihrab.watch.data.NextPrayerView
 import faith.mihrab.watch.data.SyncPayloadCache
 import faith.mihrab.watch.data.nextPrayerView
+import faith.mihrab.watch.data.resolveNextPrayer
 import kotlinx.coroutines.runBlocking
 
 class MihrabTileService : TileService() {
@@ -34,7 +35,8 @@ class MihrabTileService : TileService() {
         requestParams: TileRequest,
     ): ListenableFuture<Tile> {
         val prayer = runBlocking {
-            nextPrayerView(applicationContext, SyncPayloadCache(applicationContext).load())
+            val payload = SyncPayloadCache(applicationContext).load()
+            nextPrayerView(applicationContext, payload?.copy(nextPrayer = resolveNextPrayer(payload)))
         }
         val tile = Tile.Builder()
             .setResourcesVersion(RESOURCES_VERSION)

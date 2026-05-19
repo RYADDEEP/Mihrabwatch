@@ -39,6 +39,8 @@ data class SyncPayload(
 @Serializable
 data class SyncLocation(
     @SerialName("display_name") val displayName: String? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 )
 
 @Serializable
