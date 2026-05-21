@@ -21,4 +21,26 @@
     <string name="sync_waiting">Waiting for sync from phone…</string>
     <string name="sync_unsupported">Update Mihrab Watch to see all features</string>
     <string name="sync_qibla_missing">Sync your phone</string>
+
+    <!-- v1.1 i18n keys — watch_* prefix per Locked Decision #8.
+         Existing keys above keep their original names to avoid R.string churn. -->
+
+    <!-- Prayer Home -->
+    <string name="watch_last_updated">Last updated %1$s</string>
+
+    <!-- Pairing screen -->
+    <string name="watch_pairing_connecting">Connecting…</string>
+    <string name="watch_pairing_error_title">Connection error</string>
+    <string name="watch_pairing_error_retry">Tap to retry</string>
+    <string name="watch_pairing_code_expired_refresh">Expired — tap to refresh</string>
+    <string name="watch_pairing_code_expired">Expired</string>
+
+    <!-- Qibla compass cardinals — Latin verbatim across all locales (universal compass convention) -->
+    <string name="watch_compass_cardinal_north">N</string>
+    <string name="watch_compass_cardinal_east">E</string>
+    <string name="watch_compass_cardinal_south">S</string>
+    <string name="watch_compass_cardinal_west">W</string>
+
+    <!-- Tile -->
+    <string name="watch_tile_next_prayer_label">Next Prayer</string>
 </resources>

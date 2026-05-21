@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Pairing-code countdown: "Expires in N minute(s)". Used by PairingScreen
+         via pluralStringResource() / Resources.getQuantityString(). -->
+    <plurals name="watch_pairing_expires_in">
+        <item quantity="one">Expires in %d minute</item>
+        <item quantity="other">Expires in %d minutes</item>
+    </plurals>
+</resources>

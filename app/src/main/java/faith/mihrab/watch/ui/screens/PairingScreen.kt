@@ -25,12 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material3.Text
+import faith.mihrab.watch.R
 import faith.mihrab.watch.data.PairingDataStore
 import faith.mihrab.watch.data.PairingRepository
 import faith.mihrab.watch.data.PairingRow
@@ -178,7 +181,7 @@ fun PairingScreen(
     ) {
         when (val s = state) {
             is PairingState.Loading -> Text(
-                text = "Connecting…",
+                text = stringResource(R.string.watch_pairing_connecting),
                 color = MihrabGold.copy(alpha = 0.7f),
                 fontSize = 14.sp,
             )
@@ -187,14 +190,14 @@ fun PairingScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "Connection error",
+                    text = stringResource(R.string.watch_pairing_error_title),
                     color = MihrabGold,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "Tap to retry",
+                    text = stringResource(R.string.watch_pairing_error_retry),
                     color = Color.White.copy(alpha = 0.7f),
                     fontSize = 13.sp,
                 )
@@ -232,7 +235,7 @@ fun PairingScreen(
                     Spacer(Modifier.height(20.dp))
                     Text(
                         text = when {
-                            capReached -> "Expired — tap to refresh"
+                            capReached -> stringResource(R.string.watch_pairing_code_expired_refresh)
                             expired -> ""
                             else -> formatExpiryMinutes(remaining)
                         },
@@ -246,11 +249,11 @@ fun PairingScreen(
     }
 }
 
+@Composable
 private fun formatExpiryMinutes(remainingSeconds: Long): String {
-    if (remainingSeconds <= 0L) return "Expired"
+    if (remainingSeconds <= 0L) return stringResource(R.string.watch_pairing_code_expired)
     val minutes = ((remainingSeconds + 59L) / 60L).toInt()
-    val noun = if (minutes == 1) "minute" else "minutes"
-    return "Expires in $minutes $noun"
+    return pluralStringResource(R.plurals.watch_pairing_expires_in, minutes, minutes)
 }
 
 // PairingScreen is a monolithic stateful Composable that requires PairingRepository and

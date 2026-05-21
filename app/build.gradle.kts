@@ -107,6 +107,9 @@ dependencies {
     // Local credential storage (pairingId + pairedUserId after successful pair)
     implementation(libs.androidx.datastore.preferences)
 
+    // AppCompat — AppCompatDelegate.setApplicationLocales for i18n (display_language from sync_payload)
+    implementation(libs.androidx.appcompat)
+
     // ListenableFuture helper for Tile service (all variants — Guava was debug-only via tiles-renderer)
     implementation(libs.androidx.concurrent.futures)
 

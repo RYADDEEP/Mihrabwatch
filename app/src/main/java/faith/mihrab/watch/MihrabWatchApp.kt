@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -19,8 +21,11 @@ import faith.mihrab.watch.data.PairingCredentials
 import faith.mihrab.watch.data.PairingDataStore
 import faith.mihrab.watch.data.PairingRepository
 import faith.mihrab.watch.data.QiblaCompassRepository
+import faith.mihrab.watch.data.SyncPayload
 import faith.mihrab.watch.data.SyncPayloadCache
 import faith.mihrab.watch.data.SyncPayloadRepository
+import faith.mihrab.watch.data.SyncPayloadState
+import faith.mihrab.watch.i18n.LocaleManager
 import faith.mihrab.watch.ui.screens.PairingScreen
 import faith.mihrab.watch.ui.screens.PrayerHomeScreen
 import faith.mihrab.watch.ui.screens.QiblaCompassScreen
@@ -99,6 +104,27 @@ fun MihrabWatchApp(
                     }
                     val payloadFlow = remember(syncRepository, pairingId) {
                         pairingId?.let { syncRepository.observe(it) }
+                    }
+                    if (payloadFlow != null) {
+                        // Apply the phone-chosen UI locale from sync_payload (schema v1.1).
+                        // LocaleManager.apply short-circuits when current locale already matches.
+                        val payloadState by payloadFlow.collectAsState(initial = SyncPayloadState.Loading)
+                        val resolvedPayload: SyncPayload? = when (val s = payloadState) {
+                            is SyncPayloadState.Ready -> s.payload
+                            is SyncPayloadState.Error -> s.lastGood
+                            else -> null
+                        }
+                        LaunchedEffect(
+                            resolvedPayload?.displayLanguage,
+                            resolvedPayload?.locale,
+                        ) {
+                            LocaleManager.apply(
+                                LocaleManager.resolveTag(
+                                    displayLanguage = resolvedPayload?.displayLanguage,
+                                    locale = resolvedPayload?.locale,
+                                ),
+                            )
+                        }
                     }
                     val pagerState = rememberPagerState(pageCount = { 2 })
                     HorizontalPager(

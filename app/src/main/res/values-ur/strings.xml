@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mihrab</string>
+    <string name="tile_label">Mihrab اگلی نماز</string>
+    <string name="complication_label">Mihrab اگلی نماز</string>
+    <string name="screen_home">ہوم</string>
+    <string name="screen_prayers">نمازوں کی فہرست</string>
+    <string name="screen_qibla">قبلہ</string>
+    <string name="screen_alert">نماز کا الرٹ</string>
+    <string name="screen_settings">ترتیبات</string>
+
+    <string name="prayer_fajr">فجر</string>
+    <string name="prayer_sunrise">طلوع آفتاب</string>
+    <string name="prayer_dhuhr">ظہر</string>
+    <string name="prayer_asr">عصر</string>
+    <string name="prayer_maghrib">مغرب</string>
+    <string name="prayer_isha">عشاء</string>
+
+    <string name="sync_waiting">فون سے ہم آہنگی کا انتظار…</string>
+    <string name="sync_unsupported">تمام خصوصیات دیکھنے کے لیے Mihrab Watch اپڈیٹ کریں</string>
+    <string name="sync_qibla_missing">اپنا فون ہم آہنگ کریں</string>
+
+    <string name="watch_last_updated">آخری اپڈیٹ %1$s</string>
+    <string name="watch_pairing_connecting">کنیکٹ ہو رہا ہے…</string>
+    <string name="watch_pairing_error_title">کنیکشن میں خرابی</string>
+    <string name="watch_pairing_error_retry">دوبارہ کوشش کے لیے ٹیپ کریں</string>
+    <string name="watch_pairing_code_expired_refresh">میعاد ختم — تازہ کرنے کو ٹیپ کریں</string>
+    <string name="watch_pairing_code_expired">میعاد ختم</string>
+
+    <string name="watch_compass_cardinal_north">N</string>
+    <string name="watch_compass_cardinal_east">E</string>
+    <string name="watch_compass_cardinal_south">S</string>
+    <string name="watch_compass_cardinal_west">W</string>
+
+    <string name="watch_tile_next_prayer_label">اگلی نماز</string>
+</resources>

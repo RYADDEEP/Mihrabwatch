@@ -20,6 +20,7 @@ concurrentFutures = "1.2.0"
 kotlinxSerialization = "1.7.3"
 kotlinxCoroutines = "1.9.0"
 adhan2 = "0.0.6"
+appcompat = "1.7.0"
 
 [libraries]
 # Core
@@ -71,6 +72,10 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 
 # Prayer time computation (Option B — local adhan calculation)
 adhan2 = { module = "com.batoulapps.adhan:adhan2", version.ref = "adhan2" }
+
+# AppCompat — only used for AppCompatDelegate.setApplicationLocales (i18n locale apply).
+# MainActivity stays on ComponentActivity; static API call doesn't need AppCompatActivity.
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 
 # Test
 junit = { module = "junit:junit", version.ref = "junit" }

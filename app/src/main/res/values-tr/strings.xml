@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mihrab</string>
+    <string name="tile_label">Mihrab Sıradaki Namaz</string>
+    <string name="complication_label">Mihrab Sıradaki Namaz</string>
+    <string name="screen_home">Ana Sayfa</string>
+    <string name="screen_prayers">Namaz Listesi</string>
+    <string name="screen_qibla">Kıble</string>
+    <string name="screen_alert">Namaz Uyarısı</string>
+    <string name="screen_settings">Ayarlar</string>
+
+    <string name="prayer_fajr">Sabah</string>
+    <string name="prayer_sunrise">Güneş</string>
+    <string name="prayer_dhuhr">Öğle</string>
+    <string name="prayer_asr">İkindi</string>
+    <string name="prayer_maghrib">Akşam</string>
+    <string name="prayer_isha">Yatsı</string>
+
+    <string name="sync_waiting">Telefonla senkronizasyon bekleniyor…</string>
+    <string name="sync_unsupported">Tüm özellikler için Mihrab Watch\'ı güncelleyin</string>
+    <string name="sync_qibla_missing">Telefonunuzu senkronize edin</string>
+
+    <string name="watch_last_updated">Son güncelleme %1$s</string>
+    <string name="watch_pairing_connecting">Bağlanıyor…</string>
+    <string name="watch_pairing_error_title">Bağlantı hatası</string>
+    <string name="watch_pairing_error_retry">Yeniden denemek için dokunun</string>
+    <string name="watch_pairing_code_expired_refresh">Süresi doldu — yenilemek için dokunun</string>
+    <string name="watch_pairing_code_expired">Süresi doldu</string>
+
+    <string name="watch_compass_cardinal_north">N</string>
+    <string name="watch_compass_cardinal_east">E</string>
+    <string name="watch_compass_cardinal_south">S</string>
+    <string name="watch_compass_cardinal_west">W</string>
+
+    <string name="watch_tile_next_prayer_label">Sıradaki Namaz</string>
+</resources>

@@ -23,6 +23,7 @@ import androidx.wear.tiles.TileBuilders.Tile
 import androidx.wear.tiles.TileService
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import com.google.common.util.concurrent.ListenableFuture
+import faith.mihrab.watch.R
 import faith.mihrab.watch.data.NextPrayerView
 import faith.mihrab.watch.data.SyncPayloadCache
 import faith.mihrab.watch.data.nextPrayerView
@@ -78,7 +79,13 @@ class MihrabTileService : TileService() {
             .addContent(
                 Column.Builder()
                     .setHorizontalAlignment(HORIZONTAL_ALIGN_CENTER)
-                    .addContent(label(text = "Next Prayer", sizeSp = 13f, colorArgb = COLOR_LABEL_DIM))
+                    .addContent(
+                        label(
+                            text = applicationContext.getString(R.string.watch_tile_next_prayer_label),
+                            sizeSp = 13f,
+                            colorArgb = COLOR_LABEL_DIM,
+                        ),
+                    )
                     .addContent(spacer(8f))
                     .addContent(label(text = p.name, sizeSp = 32f, colorArgb = COLOR_GOLD, bold = true))
                     .addContent(spacer(4f))

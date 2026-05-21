@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="watch_pairing_expires_in">
+        <item quantity="one">تنتهي خلال %d دقيقة</item>
+        <item quantity="few">تنتهي خلال %d دقائق</item>
+        <item quantity="many">تنتهي خلال %d دقيقة</item>
+        <item quantity="other">تنتهي خلال %d دقيقة</item>
+    </plurals>
+</resources>

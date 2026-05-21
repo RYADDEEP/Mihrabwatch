@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mihrab</string>
+    <string name="tile_label">Mihrab Solat Seterusnya</string>
+    <string name="complication_label">Mihrab Solat Seterusnya</string>
+    <string name="screen_home">Laman Utama</string>
+    <string name="screen_prayers">Senarai Solat</string>
+    <string name="screen_qibla">Kiblat</string>
+    <string name="screen_alert">Amaran Solat</string>
+    <string name="screen_settings">Tetapan</string>
+
+    <string name="prayer_fajr">Subuh</string>
+    <string name="prayer_sunrise">Dhuha</string>
+    <string name="prayer_dhuhr">Dhuhur</string>
+    <string name="prayer_asr">Asar</string>
+    <string name="prayer_maghrib">Maghrib</string>
+    <string name="prayer_isha">Isha</string>
+
+    <string name="sync_waiting">Menunggu penyegerakan dari telefon…</string>
+    <string name="sync_unsupported">Kemas kini Mihrab Watch untuk melihat semua ciri</string>
+    <string name="sync_qibla_missing">Segerakkan telefon anda</string>
+
+    <string name="watch_last_updated">Terakhir dikemas kini %1$s</string>
+    <string name="watch_pairing_connecting">Menyambung…</string>
+    <string name="watch_pairing_error_title">Ralat sambungan</string>
+    <string name="watch_pairing_error_retry">Ketik untuk cuba lagi</string>
+    <string name="watch_pairing_code_expired_refresh">Tamat tempoh — ketik untuk segarkan</string>
+    <string name="watch_pairing_code_expired">Tamat tempoh</string>
+
+    <string name="watch_compass_cardinal_north">N</string>
+    <string name="watch_compass_cardinal_east">E</string>
+    <string name="watch_compass_cardinal_south">S</string>
+    <string name="watch_compass_cardinal_west">W</string>
+
+    <string name="watch_tile_next_prayer_label">Solat Seterusnya</string>
+</resources>

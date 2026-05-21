@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="watch_pairing_expires_in">
+        <item quantity="one">%d मिनट में समाप्त</item>
+        <item quantity="other">%d मिनट में समाप्त</item>
+    </plurals>
+</resources>

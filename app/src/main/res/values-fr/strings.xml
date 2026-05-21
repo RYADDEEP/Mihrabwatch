@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mihrab</string>
+    <string name="tile_label">Mihrab Prochaine prière</string>
+    <string name="complication_label">Mihrab Prochaine prière</string>
+    <string name="screen_home">Accueil</string>
+    <string name="screen_prayers">Liste des prières</string>
+    <string name="screen_qibla">Qibla</string>
+    <string name="screen_alert">Alerte de prière</string>
+    <string name="screen_settings">Paramètres</string>
+
+    <string name="prayer_fajr">Fajr</string>
+    <string name="prayer_sunrise">Chorouq</string>
+    <string name="prayer_dhuhr">Dohr</string>
+    <string name="prayer_asr">Asr</string>
+    <string name="prayer_maghrib">Maghreb</string>
+    <string name="prayer_isha">Icha</string>
+
+    <string name="sync_waiting">En attente de synchronisation depuis le téléphone…</string>
+    <string name="sync_unsupported">Mettez à jour Mihrab Watch pour voir toutes les fonctionnalités</string>
+    <string name="sync_qibla_missing">Synchronisez votre téléphone</string>
+
+    <string name="watch_last_updated">Dernière mise à jour %1$s</string>
+    <string name="watch_pairing_connecting">Connexion…</string>
+    <string name="watch_pairing_error_title">Erreur de connexion</string>
+    <string name="watch_pairing_error_retry">Toucher pour réessayer</string>
+    <string name="watch_pairing_code_expired_refresh">Expiré — toucher pour actualiser</string>
+    <string name="watch_pairing_code_expired">Expiré</string>
+
+    <string name="watch_compass_cardinal_north">N</string>
+    <string name="watch_compass_cardinal_east">E</string>
+    <string name="watch_compass_cardinal_south">S</string>
+    <string name="watch_compass_cardinal_west">W</string>
+
+    <string name="watch_tile_next_prayer_label">Prochaine prière</string>
+</resources>

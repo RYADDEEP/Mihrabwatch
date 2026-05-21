@@ -29,6 +29,9 @@ data class SyncPayload(
     val date: String? = null,
     val timezone: String? = null,
     val locale: String? = null,
+    // schema v1.1 additive — paired-device UI locale chosen on the phone.
+    // Resolved through LocaleManager.resolveTag with locale + device-default fallback.
+    @SerialName("display_language") val displayLanguage: String? = null,
     val location: SyncLocation? = null,
     val calculation: SyncCalculation? = null,
     val prayers: List<SyncPrayer>? = null,

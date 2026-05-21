@@ -135,7 +135,7 @@ private fun CompassRing(
 
         // N — primary orientation anchor, glowing halo
         Text(
-            text = "N",
+            text = stringResource(R.string.watch_compass_cardinal_north),
             color = MihrabWhite,
             fontSize = 17.sp,
             fontWeight = FontWeight.Bold,
@@ -152,7 +152,7 @@ private fun CompassRing(
 
         // E/S/W — subordinate, smaller, medium weight, no glow
         Text(
-            text = "E",
+            text = stringResource(R.string.watch_compass_cardinal_east),
             color = DimCardinal,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
@@ -161,7 +161,7 @@ private fun CompassRing(
                 .padding(end = CardinalEdgeInset),
         )
         Text(
-            text = "S",
+            text = stringResource(R.string.watch_compass_cardinal_south),
             color = DimCardinal,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
@@ -170,7 +170,7 @@ private fun CompassRing(
                 .padding(bottom = CardinalEdgeInset),
         )
         Text(
-            text = "W",
+            text = stringResource(R.string.watch_compass_cardinal_west),
             color = DimCardinal,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,

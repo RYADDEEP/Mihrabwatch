@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mihrab</string>
+    <string name="tile_label">Mihrab Sala Inayofuata</string>
+    <string name="complication_label">Mihrab Sala Inayofuata</string>
+    <string name="screen_home">Nyumbani</string>
+    <string name="screen_prayers">Orodha ya Sala</string>
+    <string name="screen_qibla">Qibla</string>
+    <string name="screen_alert">Tahadhari ya Sala</string>
+    <string name="screen_settings">Mipangilio</string>
+
+    <string name="prayer_fajr">Fajr</string>
+    <string name="prayer_sunrise">Dhuha</string>
+    <string name="prayer_dhuhr">Dhuhr</string>
+    <string name="prayer_asr">Asr</string>
+    <string name="prayer_maghrib">Magharibi</string>
+    <string name="prayer_isha">Isha</string>
+
+    <string name="sync_waiting">Inasubiri kusawazisha kutoka simu…</string>
+    <string name="sync_unsupported">Sasisha Mihrab Watch ili kuona vipengele vyote</string>
+    <string name="sync_qibla_missing">Sawazisha simu yako</string>
+
+    <string name="watch_last_updated">Imesasishwa mwisho %1$s</string>
+    <string name="watch_pairing_connecting">Inaunganisha…</string>
+    <string name="watch_pairing_error_title">Hitilafu ya muunganisho</string>
+    <string name="watch_pairing_error_retry">Gusa kujaribu tena</string>
+    <string name="watch_pairing_code_expired_refresh">Imeisha muda — gusa kuonyesha upya</string>
+    <string name="watch_pairing_code_expired">Imeisha muda</string>
+
+    <string name="watch_compass_cardinal_north">N</string>
+    <string name="watch_compass_cardinal_east">E</string>
+    <string name="watch_compass_cardinal_south">S</string>
+    <string name="watch_compass_cardinal_west">W</string>
+
+    <string name="watch_tile_next_prayer_label">Sala Inayofuata</string>
+</resources>

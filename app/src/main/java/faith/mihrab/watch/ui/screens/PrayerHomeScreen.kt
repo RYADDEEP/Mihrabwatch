@@ -109,7 +109,8 @@ fun PrayerHomeScreen(payloadFlow: Flow<SyncPayloadState>) {
             } ?: false
             // Ready state: no caption. Error state with lastGood: show "Last updated" only.
             val caption = if (state !is SyncPayloadState.Ready && stale && payload.lastUpdated != null) {
-                "Last updated " + (formatLocalTime(payload.lastUpdated, payload.timezone) ?: "—")
+                val time = formatLocalTime(payload.lastUpdated, payload.timezone) ?: "—"
+                stringResource(R.string.watch_last_updated, time)
             } else null
 
             PrayerHomeContent(
