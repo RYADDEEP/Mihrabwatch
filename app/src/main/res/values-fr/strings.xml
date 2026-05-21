@@ -33,4 +33,9 @@
     <string name="watch_compass_cardinal_west">W</string>
 
     <string name="watch_tile_next_prayer_label">Prochaine prière</string>
+
+    <string name="watch_countdown_short_hm">%1$dh %2$dm</string>
+    <string name="watch_countdown_short_m">%1$dm</string>
+    <string name="watch_countdown_long_hm">dans %1$dh %2$dm</string>
+    <string name="watch_countdown_long_m">dans %1$dm</string>
 </resources>

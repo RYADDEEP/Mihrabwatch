@@ -33,4 +33,9 @@
     <string name="watch_compass_cardinal_west">W</string>
 
     <string name="watch_tile_next_prayer_label">اگلی نماز</string>
+
+    <string name="watch_countdown_short_hm">%1$dگھ %2$dمن</string>
+    <string name="watch_countdown_short_m">%1$dمن</string>
+    <string name="watch_countdown_long_hm">%1$dگھ %2$dمن میں</string>
+    <string name="watch_countdown_long_m">%1$dمن میں</string>
 </resources>

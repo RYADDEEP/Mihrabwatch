@@ -222,7 +222,7 @@ fun PairingScreen(
                             brush = Brush.linearGradient(
                                 colors = listOf(MihrabGold, MihrabGoldBright),
                             ),
-                            fontSize = 28.sp,
+                            fontSize = 44.sp,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 4.sp,

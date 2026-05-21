@@ -33,4 +33,9 @@
     <string name="watch_compass_cardinal_west">W</string>
 
     <string name="watch_tile_next_prayer_label">Sıradaki Namaz</string>
+
+    <string name="watch_countdown_short_hm">%1$dsa %2$ddk</string>
+    <string name="watch_countdown_short_m">%1$ddk</string>
+    <string name="watch_countdown_long_hm">%1$dsa %2$ddk sonra</string>
+    <string name="watch_countdown_long_m">%1$ddk sonra</string>
 </resources>

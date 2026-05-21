@@ -43,4 +43,12 @@
 
     <!-- Tile -->
     <string name="watch_tile_next_prayer_label">Next Prayer</string>
+
+    <!-- Tile + Complication countdown formatters. %1$d = hours, %2$d = minutes.
+         _hm variants used when hours >= 1; _m variants when only minutes remain.
+         _short used by Complication SHORT_TEXT title; _long used by Tile bottom line and Complication LONG_TEXT title. -->
+    <string name="watch_countdown_short_hm">%1$dh %2$dm</string>
+    <string name="watch_countdown_short_m">%1$dm</string>
+    <string name="watch_countdown_long_hm">in %1$dh %2$dm</string>
+    <string name="watch_countdown_long_m">in %1$dm</string>
 </resources>

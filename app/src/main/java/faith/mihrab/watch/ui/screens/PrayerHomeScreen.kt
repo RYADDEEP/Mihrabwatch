@@ -116,7 +116,7 @@ fun PrayerHomeScreen(payloadFlow: Flow<SyncPayloadState>) {
             PrayerHomeContent(
                 timeText = formatLocalTime(next?.time, payload.timezone) ?: DashTime,
                 prayerName = localizedPrayerName(context, next?.name).ifBlank { DashPrayer },
-                countdown = countdownLong(remaining),
+                countdown = countdownLong(context, remaining),
                 progress = ringProgress(payload.lastUpdated, next?.time, nowInstant),
                 caption = caption,
             )

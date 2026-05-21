@@ -55,22 +55,28 @@ fun ringProgress(lastUpdatedIso: String?, nextIso: String?, now: Instant): Float
 fun remainingMillis(nextIso: String?, now: Instant): Long? =
     parseInstant(nextIso)?.let { Duration.between(now, it).toMillis() }
 
-fun countdownShort(remainingMs: Long?): String {
+fun countdownShort(context: Context, remainingMs: Long?): String {
     if (remainingMs == null) return "—"
-    if (remainingMs <= 0L) return "0m"
-    val minutes = (remainingMs / 60_000L).coerceAtLeast(1L)
-    val hours = minutes / 60L
-    val mins = minutes % 60L
-    return if (hours >= 1L) "${hours}h ${mins}m" else "${mins}m"
+    val totalMinutes = if (remainingMs <= 0L) 0L else (remainingMs / 60_000L).coerceAtLeast(1L)
+    val hours = (totalMinutes / 60L).toInt()
+    val mins = (totalMinutes % 60L).toInt()
+    return if (hours >= 1) {
+        context.getString(R.string.watch_countdown_short_hm, hours, mins)
+    } else {
+        context.getString(R.string.watch_countdown_short_m, mins)
+    }
 }
 
-fun countdownLong(remainingMs: Long?): String {
+fun countdownLong(context: Context, remainingMs: Long?): String {
     if (remainingMs == null) return "—"
-    if (remainingMs <= 0L) return "in 0m"
-    val minutes = (remainingMs / 60_000L).coerceAtLeast(1L)
-    val hours = minutes / 60L
-    val mins = minutes % 60L
-    return if (hours >= 1L) "in ${hours}h ${mins}m" else "in ${mins}m"
+    val totalMinutes = if (remainingMs <= 0L) 0L else (remainingMs / 60_000L).coerceAtLeast(1L)
+    val hours = (totalMinutes / 60L).toInt()
+    val mins = (totalMinutes % 60L).toInt()
+    return if (hours >= 1) {
+        context.getString(R.string.watch_countdown_long_hm, hours, mins)
+    } else {
+        context.getString(R.string.watch_countdown_long_m, mins)
+    }
 }
 
 /** Flat next-prayer view for the Tile + Complication (separate processes, read from cache). */
@@ -96,7 +102,7 @@ fun nextPrayerView(
     return NextPrayerView(
         name = name,
         time = time,
-        countdownShort = countdownShort(remaining),
-        countdownLong = countdownLong(remaining),
+        countdownShort = countdownShort(context, remaining),
+        countdownLong = countdownLong(context, remaining),
     )
 }
