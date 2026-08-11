@@ -22,9 +22,14 @@ val MihrabGoldBright = Color(0xFFF5C842)
 val MihrabSuccessGreen = Color(0xFF30D158)
 val MihrabAlertRed = Color(0xFFFF453A)
 
-// Prayer Home ring tokens — exact values from MIHRAB_WATCH_DESIGN_GUIDE.md Part 5 Screen 1
-val MihrabRingTrack = Color(0x1AFFFFFF)
-val MihrabRingCountdownText = Color(0x99EBEBF5)
+// Prayer Home ring tokens.
+// Alpha ruling: nothing below 22% carries information outdoors on OLED black. The track was
+// 10% and the countdown 60% — both measured as lost or marginal in daylight.
+val MihrabRingTrack = Color(0x38FFFFFF)
+val MihrabRingCountdownText = Color(0xB3EBEBF5)
+
+// Qibla compass ring — frame, never information. 30% is the floor at which it reads outdoors.
+val MihrabCompassRing = Color(0x4DFFFFFF)
 
 // Prayer colors — sky-based palette, locked per design guide Section 2.2
 val PrayerFajr = Color(0xFF8AABBA)

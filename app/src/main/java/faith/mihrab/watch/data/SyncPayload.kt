@@ -26,7 +26,8 @@ val SyncPayloadJson: Json = Json {
 data class SyncPayload(
     @SerialName("schema_version") val schemaVersion: Int? = null,
     @SerialName("last_updated") val lastUpdated: String? = null,
-    val date: String? = null,
+    // `date` is deliberately absent: it existed only to drive the staleness caption, which is
+    // gone. `ignoreUnknownKeys` means the phone can keep sending it with no contract break.
     val timezone: String? = null,
     val locale: String? = null,
     // schema v1.1 additive — paired-device UI locale chosen on the phone.

@@ -19,18 +19,12 @@
     <string name="sync_waiting">Telefonla senkronizasyon bekleniyor…</string>
     <string name="sync_unsupported">Tüm özellikler için Mihrab Watch\'ı güncelleyin</string>
     <string name="sync_qibla_missing">Telefonunuzu senkronize edin</string>
+    <string name="watch_qibla_no_compass">Pusula kullanılamıyor</string>
 
-    <string name="watch_last_updated">Son güncelleme %1$s</string>
     <string name="watch_pairing_connecting">Bağlanıyor…</string>
     <string name="watch_pairing_error_title">Bağlantı hatası</string>
     <string name="watch_pairing_error_retry">Yeniden denemek için dokunun</string>
     <string name="watch_pairing_code_expired_refresh">Süresi doldu — yenilemek için dokunun</string>
-    <string name="watch_pairing_code_expired">Süresi doldu</string>
-
-    <string name="watch_compass_cardinal_north">N</string>
-    <string name="watch_compass_cardinal_east">E</string>
-    <string name="watch_compass_cardinal_south">S</string>
-    <string name="watch_compass_cardinal_west">W</string>
 
     <string name="watch_tile_next_prayer_label">Sıradaki Namaz</string>
 

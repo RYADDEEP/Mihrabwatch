@@ -39,18 +39,8 @@ fun parseInstant(iso: String?): Instant? =
 fun formatLocalTime(iso: String?, timezone: String?): String? =
     parseInstant(iso)?.atZone(resolveZone(timezone))?.format(LocalTimeFormatter)
 
-/**
- * Ring fill = fraction elapsed between when the phone wrote the payload and the next prayer.
- * Uses only Phase 5b–permitted fields (`last_updated`, `next_prayer.time`).
- */
-fun ringProgress(lastUpdatedIso: String?, nextIso: String?, now: Instant): Float {
-    val start = parseInstant(lastUpdatedIso) ?: return 0f
-    val end = parseInstant(nextIso) ?: return 0f
-    val total = Duration.between(start, end).toMillis()
-    if (total <= 0L) return 1f
-    val elapsed = Duration.between(start, now).toMillis().coerceAtLeast(0L)
-    return (elapsed.toFloat() / total.toFloat()).coerceIn(0f, 1f)
-}
+// Ring progress lives in PrayerResolver.windowProgress — it is anchored to the prayer window,
+// not to `last_updated`, so it is window maths rather than formatting.
 
 fun remainingMillis(nextIso: String?, now: Instant): Long? =
     parseInstant(nextIso)?.let { Duration.between(now, it).toMillis() }

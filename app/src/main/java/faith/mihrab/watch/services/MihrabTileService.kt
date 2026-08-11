@@ -26,8 +26,9 @@ import com.google.common.util.concurrent.ListenableFuture
 import faith.mihrab.watch.R
 import faith.mihrab.watch.data.NextPrayerView
 import faith.mihrab.watch.data.SyncPayloadCache
+import faith.mihrab.watch.data.nextOrFallback
 import faith.mihrab.watch.data.nextPrayerView
-import faith.mihrab.watch.data.resolveNextPrayer
+import faith.mihrab.watch.data.resolveWindow
 import kotlinx.coroutines.runBlocking
 
 class MihrabTileService : TileService() {
@@ -37,7 +38,10 @@ class MihrabTileService : TileService() {
     ): ListenableFuture<Tile> {
         val prayer = runBlocking {
             val payload = SyncPayloadCache(applicationContext).load()
-            nextPrayerView(applicationContext, payload?.copy(nextPrayer = resolveNextPrayer(payload)))
+            // Same window resolver as Prayer Home and the Complication, so the Tile inherits
+            // the sunrise exclusion and the three surfaces can never name different prayers.
+            val resolved = payload?.let { it.copy(nextPrayer = resolveWindow(it).nextOrFallback(it)) }
+            nextPrayerView(applicationContext, resolved)
         }
         val tile = Tile.Builder()
             .setResourcesVersion(RESOURCES_VERSION)

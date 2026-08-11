@@ -2,7 +2,7 @@ package faith.mihrab.watch.ui.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,56 +14,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.wear.compose.material3.MaterialTheme
+import androidx.compose.ui.unit.Dp
 import androidx.wear.compose.material3.Text
 import faith.mihrab.watch.R
 import faith.mihrab.watch.data.QiblaCompassRepository
 import faith.mihrab.watch.data.SyncPayload
 import faith.mihrab.watch.data.SyncPayloadState
 import faith.mihrab.watch.ui.theme.MihrabBlack
+import faith.mihrab.watch.ui.theme.MihrabCompassRing
 import faith.mihrab.watch.ui.theme.MihrabGold
 import faith.mihrab.watch.ui.theme.MihrabGoldBright
 import faith.mihrab.watch.ui.theme.MihrabWatchTheme
 import faith.mihrab.watch.ui.theme.MihrabWhite
+import faith.mihrab.watch.ui.theme.WatchScale
 import kotlinx.coroutines.flow.Flow
 
-// Design guide spec values (MIHRAB_WATCH_DESIGN_GUIDE.md Part 5 Screen 3, round-face adapted)
-private val SafeZonePadding = 24.dp
-private val CompassDiameter = 240.dp
-private val CompassStroke = 2.5.dp
-private val InnerGlowRingInset = 2.dp
-private val InnerGlowRingStroke = 1.dp
-private val CardinalTickLength = 10.dp
-private val CardinalTickStroke = 1.5.dp
-private val MinorTickLength = 6.dp
-private val MinorTickStroke = 1.dp
-private val ArrowLength = 80.dp
-private val ArrowHalfBase = 6.dp
-private val ArrowHeight = 24.dp
-private val ArrowTipDotRadius = 3.dp
-private val ArrowTipCoreRadius = 1.5.dp
-private val ArrowGlowInnerRadius = 8.dp
-private val ArrowGlowOuterRadius = 20.dp
-private val CardinalEdgeInset = 6.dp
+// Arrow geometry, all as fractions of the compass radius R, so the tip and its glow stay
+// inside the ring at every screen size. The glow's outer edge lands at 0.98·R.
+private const val ARROW_TIP = 0.78f
+private const val ARROW_BASE = 0.50f
+private const val ARROW_HALF_BASE = 0.075f
+private const val GLOW_OUTER = 0.20f
+private const val GLOW_INNER = 0.09f
+private const val TIP_DOT = 0.042f
+private const val TIP_JEWEL = 0.021f
 
-private val CompassRingBorder = Color(0x26FFFFFF)
-private val InnerGlowRingColor = Color(0x0DFFFFFF)
-private val CardinalTickColor = Color(0x66FFFFFF)
-private val MinorTickColor = Color(0x33FFFFFF)
-private val DimCardinal = Color(0x80EBEBF5)
+private const val GLOW_OUTER_ALPHA = 0.2f
+private const val GLOW_INNER_ALPHA = 0.6f
 
 @Composable
 fun QiblaCompassScreen(
@@ -87,181 +72,108 @@ fun QiblaCompassScreen(
         is SyncPayloadState.UnsupportedVersion -> state.payload
         else -> null
     }
-    // Graceful degradation (schema §5/§8.D): render the bearing whenever we have one.
     val qiblaBearing = payload?.qibla?.bearingDegrees?.toFloat()
 
     QiblaCompassContent(
         currentHeading = heading,
         qiblaBearing = qiblaBearing,
+        hasSensor = repository.hasOrientationSensor,
     )
 }
 
 @Composable
 private fun QiblaCompassContent(
-    currentHeading: Float,
+    currentHeading: Float?,
     qiblaBearing: Float?,
+    hasSensor: Boolean,
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(MihrabBlack)
-            .padding(SafeZonePadding),
+            .background(MihrabBlack),
         contentAlignment = Alignment.Center,
     ) {
+        val scale = WatchScale.from(maxWidth, maxHeight)
+
         CompassRing(
-            currentHeading = currentHeading,
-            qiblaBearing = qiblaBearing,
+            diameter = scale.compassDiameter,
+            stroke = scale.compassStroke,
+            // The arrow is drawn only when there is both somewhere to point and a way to know
+            // which way is which. Anything else would be a confident, meaningless arrow.
+            arrowRotation = if (qiblaBearing != null && currentHeading != null) {
+                qiblaBearing - currentHeading
+            } else {
+                null
+            },
         )
-        if (qiblaBearing == null) {
+
+        val message = when {
+            qiblaBearing == null -> stringResource(R.string.sync_qibla_missing)
+            !hasSensor -> stringResource(R.string.watch_qibla_no_compass)
+            else -> null
+        }
+        if (message != null) {
             Text(
-                text = stringResource(R.string.sync_qibla_missing),
+                text = message,
                 color = MihrabWhite,
-                style = MaterialTheme.typography.bodyLarge,
+                fontSize = scale.messageSize,
+                fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = scale.screenPadding),
             )
         }
     }
 }
 
 @Composable
-private fun CompassRing(
-    currentHeading: Float,
-    qiblaBearing: Float?,
-) {
-    Box(modifier = Modifier.size(CompassDiameter)) {
-        Canvas(modifier = Modifier.matchParentSize()) {
-            drawCompass(currentHeading = currentHeading, qiblaBearing = qiblaBearing)
-        }
+private fun CompassRing(diameter: Dp, stroke: Dp, arrowRotation: Float?) {
+    Canvas(modifier = Modifier.size(diameter)) {
+        val strokePx = stroke.toPx()
+        val radius = size.minDimension / 2f - strokePx / 2f
+        val center = Offset(size.width / 2f, size.height / 2f)
 
-        // N — primary orientation anchor, glowing halo
-        Text(
-            text = stringResource(R.string.watch_compass_cardinal_north),
-            color = MihrabWhite,
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = CardinalEdgeInset),
-            style = TextStyle(
-                shadow = Shadow(
-                    color = MihrabWhite.copy(alpha = 0.5f),
-                    blurRadius = 8f,
-                ),
-            ),
+        // The ring is frame, never information — it carries no cardinal marks, because it is
+        // fixed to the screen rather than to the world and could only ever mislead.
+        drawCircle(
+            color = MihrabCompassRing,
+            radius = radius,
+            center = center,
+            style = Stroke(width = strokePx),
         )
 
-        // E/S/W — subordinate, smaller, medium weight, no glow
-        Text(
-            text = stringResource(R.string.watch_compass_cardinal_east),
-            color = DimCardinal,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = CardinalEdgeInset),
-        )
-        Text(
-            text = stringResource(R.string.watch_compass_cardinal_south),
-            color = DimCardinal,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = CardinalEdgeInset),
-        )
-        Text(
-            text = stringResource(R.string.watch_compass_cardinal_west),
-            color = DimCardinal,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = CardinalEdgeInset),
-        )
+        if (arrowRotation == null) return@Canvas
+        drawQiblaArrow(center = center, radius = radius, rotation = arrowRotation)
     }
 }
 
-private fun DrawScope.drawCompass(currentHeading: Float, qiblaBearing: Float?) {
-    val strokePx = CompassStroke.toPx()
-    val ringRadius = size.minDimension / 2f - strokePx / 2f
-    val center = Offset(size.width / 2f, size.height / 2f)
+private fun DrawScope.drawQiblaArrow(center: Offset, radius: Float, rotation: Float) {
+    val tipR = radius * ARROW_TIP
+    val baseR = radius * ARROW_BASE
+    val halfBase = radius * ARROW_HALF_BASE
 
-    // Main ring border
-    drawCircle(
-        color = CompassRingBorder,
-        radius = ringRadius,
-        center = center,
-        style = Stroke(width = strokePx),
-    )
+    rotate(degrees = rotation, pivot = center) {
+        val tip = Offset(center.x, center.y - tipR)
+        val baseLeft = Offset(center.x - halfBase, center.y - baseR)
+        val baseRight = Offset(center.x + halfBase, center.y - baseR)
 
-    // Inner faint glow ring — adds depth, very subtle
-    val innerGlowRadius = ringRadius - InnerGlowRingInset.toPx()
-    drawCircle(
-        color = InnerGlowRingColor,
-        radius = innerGlowRadius,
-        center = center,
-        style = Stroke(width = InnerGlowRingStroke.toPx()),
-    )
-
-    // Tick marks with cardinal/minor hierarchy
-    val tickStart = ringRadius - strokePx / 2f
-    val cardinalTickLengthPx = CardinalTickLength.toPx()
-    val minorTickLengthPx = MinorTickLength.toPx()
-    val cardinalTickStrokePx = CardinalTickStroke.toPx()
-    val minorTickStrokePx = MinorTickStroke.toPx()
-
-    for (i in 0 until 12) {
-        val isCardinal = i % 3 == 0  // i=0 (N), i=3 (E), i=6 (S), i=9 (W)
-        val tickLength = if (isCardinal) cardinalTickLengthPx else minorTickLengthPx
-        val tickStroke = if (isCardinal) cardinalTickStrokePx else minorTickStrokePx
-        val tickColor = if (isCardinal) CardinalTickColor else MinorTickColor
-
-        rotate(degrees = i * 30f, pivot = center) {
-            drawLine(
-                color = tickColor,
-                start = Offset(center.x, center.y - tickStart),
-                end = Offset(center.x, center.y - tickStart + tickLength),
-                strokeWidth = tickStroke,
-            )
-        }
-    }
-
-    // No bearing from the phone yet — draw ring + ticks only, the screen shows a sync prompt.
-    if (qiblaBearing == null) return
-
-    // Qibla arrow with gradient fill + two-layer glow + jewel tip
-    val arrowRotation = qiblaBearing - currentHeading
-    val arrowLengthPx = ArrowLength.toPx()
-    val arrowHeightPx = ArrowHeight.toPx()
-    val arrowHalfBasePx = ArrowHalfBase.toPx()
-    val glowInnerPx = ArrowGlowInnerRadius.toPx()
-    val glowOuterPx = ArrowGlowOuterRadius.toPx()
-    val tipDotPx = ArrowTipDotRadius.toPx()
-    val tipCorePx = ArrowTipCoreRadius.toPx()
-
-    rotate(degrees = arrowRotation, pivot = center) {
-        val tip = Offset(center.x, center.y - arrowLengthPx)
-        val baseLeft = Offset(center.x - arrowHalfBasePx, center.y - arrowLengthPx + arrowHeightPx)
-        val baseRight = Offset(center.x + arrowHalfBasePx, center.y - arrowLengthPx + arrowHeightPx)
-
-        // Outer halo — soft bloom around tip
+        // Outer halo — soft bloom around the tip
         drawCircle(
-            color = MihrabGold.copy(alpha = 0.2f),
-            radius = glowOuterPx,
+            color = MihrabGold.copy(alpha = GLOW_OUTER_ALPHA),
+            radius = radius * GLOW_OUTER,
             center = tip,
         )
         // Inner glow — brighter halo
         drawCircle(
-            color = MihrabGold.copy(alpha = 0.6f),
-            radius = glowInnerPx,
+            color = MihrabGold.copy(alpha = GLOW_INNER_ALPHA),
+            radius = radius * GLOW_INNER,
             center = tip,
         )
 
         // Arrow body — gradient from MihrabGold (base) to MihrabGoldBright (tip)
         val arrowBrush = Brush.linearGradient(
             colors = listOf(MihrabGold, MihrabGoldBright),
-            start = Offset(center.x, center.y - arrowLengthPx + arrowHeightPx),  // base
-            end = Offset(center.x, center.y - arrowLengthPx),                    // tip
+            start = Offset(center.x, center.y - baseR),
+            end = Offset(center.x, center.y - tipR),
         )
         val path = Path().apply {
             moveTo(tip.x, tip.y)
@@ -271,18 +183,9 @@ private fun DrawScope.drawCompass(currentHeading: Float, qiblaBearing: Float?) {
         }
         drawPath(path = path, brush = arrowBrush)
 
-        // Tip dot — 6dp full gold
-        drawCircle(
-            color = MihrabGold,
-            radius = tipDotPx,
-            center = tip,
-        )
-        // Tip jewel core — 3dp pure white inside the gold dot
-        drawCircle(
-            color = MihrabWhite,
-            radius = tipCorePx,
-            center = tip,
-        )
+        // Tip dot, then the pure-white jewel core inside it — the brightest point on the face.
+        drawCircle(color = MihrabGold, radius = radius * TIP_DOT, center = tip)
+        drawCircle(color = MihrabWhite, radius = radius * TIP_JEWEL, center = tip)
     }
 }
 
@@ -292,11 +195,32 @@ private fun DrawScope.drawCompass(currentHeading: Float, qiblaBearing: Float?) {
     backgroundColor = 0xFF000000,
 )
 @Composable
-private fun QiblaCompassPreview() {
+private fun QiblaCompassLargeRoundPreview() {
     MihrabWatchTheme {
-        QiblaCompassContent(
-            currentHeading = 0f,
-            qiblaBearing = 294f,
-        )
+        QiblaCompassContent(currentHeading = 0f, qiblaBearing = 294f, hasSensor = true)
+    }
+}
+
+@Preview(
+    device = "id:wearos_small_round",
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+)
+@Composable
+private fun QiblaCompassSmallRoundPreview() {
+    MihrabWatchTheme {
+        QiblaCompassContent(currentHeading = 40f, qiblaBearing = 294f, hasSensor = true)
+    }
+}
+
+@Preview(
+    device = "id:wearos_small_round",
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+)
+@Composable
+private fun QiblaCompassNoSensorPreview() {
+    MihrabWatchTheme {
+        QiblaCompassContent(currentHeading = null, qiblaBearing = 294f, hasSensor = false)
     }
 }

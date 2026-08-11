@@ -19,18 +19,12 @@
     <string name="sync_waiting">En attente de synchronisation depuis le téléphone…</string>
     <string name="sync_unsupported">Mettez à jour Mihrab Watch pour voir toutes les fonctionnalités</string>
     <string name="sync_qibla_missing">Synchronisez votre téléphone</string>
+    <string name="watch_qibla_no_compass">Boussole indisponible</string>
 
-    <string name="watch_last_updated">Dernière mise à jour %1$s</string>
     <string name="watch_pairing_connecting">Connexion…</string>
     <string name="watch_pairing_error_title">Erreur de connexion</string>
     <string name="watch_pairing_error_retry">Toucher pour réessayer</string>
     <string name="watch_pairing_code_expired_refresh">Expiré — toucher pour actualiser</string>
-    <string name="watch_pairing_code_expired">Expiré</string>
-
-    <string name="watch_compass_cardinal_north">N</string>
-    <string name="watch_compass_cardinal_east">E</string>
-    <string name="watch_compass_cardinal_south">S</string>
-    <string name="watch_compass_cardinal_west">W</string>
 
     <string name="watch_tile_next_prayer_label">Prochaine prière</string>
 

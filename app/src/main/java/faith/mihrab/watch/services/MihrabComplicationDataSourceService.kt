@@ -11,9 +11,10 @@ import androidx.wear.watchface.complications.datasource.SuspendingComplicationDa
 import faith.mihrab.watch.R
 import faith.mihrab.watch.data.NextPrayerView
 import faith.mihrab.watch.data.SyncPayloadCache
+import faith.mihrab.watch.data.nextOrFallback
 import faith.mihrab.watch.data.nextPrayerView
-import faith.mihrab.watch.data.resolveNextPrayer
-import faith.mihrab.watch.data.ringProgress
+import faith.mihrab.watch.data.resolveWindow
+import faith.mihrab.watch.data.windowProgress
 import java.time.Instant
 
 class MihrabComplicationDataSourceService : SuspendingComplicationDataSourceService() {
@@ -22,12 +23,14 @@ class MihrabComplicationDataSourceService : SuspendingComplicationDataSourceServ
         build(type, previewData(), progress = PREVIEW_PROGRESS)
 
     override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData? {
-        val resolved = SyncPayloadCache(applicationContext).load()
-            ?.let { it.copy(nextPrayer = resolveNextPrayer(it)) }
         val now = Instant.now()
+        val payload = SyncPayloadCache(applicationContext).load()
+        // One window, one `now` — the gauge below and the Prayer Home ring are the same maths,
+        // so two arcs on one wrist can never disagree at the same moment.
+        val window = payload?.let { resolveWindow(it, now = now) }
+        val resolved = payload?.copy(nextPrayer = window.nextOrFallback(payload))
         val view = nextPrayerView(applicationContext, resolved, now)
-        val progress = ringProgress(resolved?.lastUpdated, resolved?.nextPrayer?.time, now)
-        return build(request.complicationType, view, progress)
+        return build(request.complicationType, view, windowProgress(window, now))
     }
 
     private fun previewData(): NextPrayerView = NextPrayerView(
@@ -37,7 +40,7 @@ class MihrabComplicationDataSourceService : SuspendingComplicationDataSourceServ
         countdownLong = applicationContext.getString(R.string.watch_countdown_long_m, 20),
     )
 
-    private fun build(type: ComplicationType, p: NextPrayerView, progress: Float): ComplicationData? {
+    private fun build(type: ComplicationType, p: NextPrayerView, progress: Float?): ComplicationData? {
         val description = PlainComplicationText
             .Builder("Mihrab next prayer ${p.name} ${p.countdownLong}")
             .build()
@@ -56,8 +59,10 @@ class MihrabComplicationDataSourceService : SuspendingComplicationDataSourceServ
                 .setTitle(PlainComplicationText.Builder(p.countdownLong).build())
                 .build()
 
+            // An unknown window reads as an empty gauge rather than a blank slot — the text
+            // still names the prayer, which is the part the watch does know.
             ComplicationType.RANGED_VALUE -> RangedValueComplicationData.Builder(
-                value = (progress * 100f).coerceIn(0f, 100f),
+                value = ((progress ?: 0f) * 100f).coerceIn(0f, 100f),
                 min = 0f,
                 max = 100f,
                 contentDescription = description,

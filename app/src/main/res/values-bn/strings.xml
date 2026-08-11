@@ -19,18 +19,12 @@
     <string name="sync_waiting">ফোন থেকে সিঙ্কের অপেক্ষায়…</string>
     <string name="sync_unsupported">সব ফিচার দেখতে Mihrab Watch আপডেট করুন</string>
     <string name="sync_qibla_missing">আপনার ফোন সিঙ্ক করুন</string>
+    <string name="watch_qibla_no_compass">কম্পাস উপলব্ধ নয়</string>
 
-    <string name="watch_last_updated">শেষ আপডেট %1$s</string>
     <string name="watch_pairing_connecting">সংযুক্ত হচ্ছে…</string>
     <string name="watch_pairing_error_title">সংযোগ ত্রুটি</string>
     <string name="watch_pairing_error_retry">আবার চেষ্টা করতে ট্যাপ করুন</string>
     <string name="watch_pairing_code_expired_refresh">মেয়াদ শেষ — রিফ্রেশ করতে ট্যাপ করুন</string>
-    <string name="watch_pairing_code_expired">মেয়াদ শেষ</string>
-
-    <string name="watch_compass_cardinal_north">N</string>
-    <string name="watch_compass_cardinal_east">E</string>
-    <string name="watch_compass_cardinal_south">S</string>
-    <string name="watch_compass_cardinal_west">W</string>
 
     <string name="watch_tile_next_prayer_label">পরবর্তী নামাজ</string>
 

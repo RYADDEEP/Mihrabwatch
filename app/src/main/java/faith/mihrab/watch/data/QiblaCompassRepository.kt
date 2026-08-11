@@ -14,40 +14,23 @@ import kotlin.math.sin
 
 private const val SMOOTHING_ALPHA = 0.15f
 
-private val CARDINAL_NAMES = listOf(
-    "North",
-    "North-Northeast",
-    "Northeast",
-    "East-Northeast",
-    "East",
-    "East-Southeast",
-    "Southeast",
-    "South-Southeast",
-    "South",
-    "South-Southwest",
-    "Southwest",
-    "West-Southwest",
-    "West",
-    "West-Northwest",
-    "Northwest",
-    "North-Northwest",
-)
-
-// 16-point compass at 22.5° increments. 294° falls in the West-Northwest range (281.25°–303.75°).
-fun bearingToCardinalName(bearing: Float): String {
-    val normalized = ((bearing % 360f) + 360f) % 360f
-    val index = (((normalized + 11.25f) / 22.5f).toInt()) % 16
-    return CARDINAL_NAMES[index]
-}
-
 class QiblaCompassRepository(context: Context) : SensorEventListener {
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val rotationVectorSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
     private val accelerometer: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     private val magnetometer: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
 
-    private val _heading = MutableStateFlow(0f)
-    val heading: StateFlow<Float> = _heading.asStateFlow()
+    /**
+     * True when this watch can determine its orientation at all — the rotation vector, or an
+     * accelerometer and magnetometer to fuse. When false the screen must not draw an arrow: a
+     * compass that cannot know must not point.
+     */
+    val hasOrientationSensor: Boolean =
+        rotationVectorSensor != null || (accelerometer != null && magnetometer != null)
+
+    /** Null until the first sample arrives — never a fabricated zero. */
+    private val _heading = MutableStateFlow<Float?>(null)
+    val heading: StateFlow<Float?> = _heading.asStateFlow()
 
     private val rotationMatrix = FloatArray(9)
     private val orientation = FloatArray(3)
@@ -55,7 +38,6 @@ class QiblaCompassRepository(context: Context) : SensorEventListener {
 
     private var gravity: FloatArray? = null
     private var geomagnetic: FloatArray? = null
-    private var hasFirstSample = false
 
     fun start() {
         if (rotationVectorSensor != null) {
@@ -70,7 +52,7 @@ class QiblaCompassRepository(context: Context) : SensorEventListener {
         sensorManager.unregisterListener(this)
         gravity = null
         geomagnetic = null
-        hasFirstSample = false
+        _heading.value = null
     }
 
     override fun onSensorChanged(event: SensorEvent) {
@@ -104,12 +86,8 @@ class QiblaCompassRepository(context: Context) : SensorEventListener {
 
     private fun publishHeading(azimuthRadians: Float) {
         val rawDeg = ((Math.toDegrees(azimuthRadians.toDouble()).toFloat() % 360f) + 360f) % 360f
-        if (!hasFirstSample) {
-            hasFirstSample = true
-            _heading.value = rawDeg
-        } else {
-            _heading.value = smoothCircular(_heading.value, rawDeg, SMOOTHING_ALPHA)
-        }
+        val previous = _heading.value
+        _heading.value = if (previous == null) rawDeg else smoothCircular(previous, rawDeg, SMOOTHING_ALPHA)
     }
 
     // Smooth in sin/cos space so the 0°/360° wraparound doesn't cause the arrow to spin

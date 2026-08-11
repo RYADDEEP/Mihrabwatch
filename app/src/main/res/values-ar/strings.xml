@@ -19,18 +19,12 @@
     <string name="sync_waiting">في انتظار المزامنة من الهاتف…</string>
     <string name="sync_unsupported">حدّث Mihrab Watch لرؤية كل الميزات</string>
     <string name="sync_qibla_missing">زامن هاتفك</string>
+    <string name="watch_qibla_no_compass">البوصلة غير متاحة</string>
 
-    <string name="watch_last_updated">آخر تحديث %1$s</string>
     <string name="watch_pairing_connecting">جاري الاتصال…</string>
     <string name="watch_pairing_error_title">خطأ في الاتصال</string>
     <string name="watch_pairing_error_retry">اضغط لإعادة المحاولة</string>
     <string name="watch_pairing_code_expired_refresh">انتهت الصلاحية — اضغط للتحديث</string>
-    <string name="watch_pairing_code_expired">انتهت الصلاحية</string>
-
-    <string name="watch_compass_cardinal_north">N</string>
-    <string name="watch_compass_cardinal_east">E</string>
-    <string name="watch_compass_cardinal_south">S</string>
-    <string name="watch_compass_cardinal_west">W</string>
 
     <string name="watch_tile_next_prayer_label">الصلاة التالية</string>
 
