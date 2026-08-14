@@ -3,11 +3,6 @@
     <string name="app_name">Mihrab</string>
     <string name="tile_label">Mihrab Salat Berikutnya</string>
     <string name="complication_label">Mihrab Salat Berikutnya</string>
-    <string name="screen_home">Beranda</string>
-    <string name="screen_prayers">Daftar Salat</string>
-    <string name="screen_qibla">Kiblat</string>
-    <string name="screen_alert">Pengingat Salat</string>
-    <string name="screen_settings">Pengaturan</string>
 
     <string name="prayer_fajr">Subuh</string>
     <string name="prayer_sunrise">Dhuha</string>

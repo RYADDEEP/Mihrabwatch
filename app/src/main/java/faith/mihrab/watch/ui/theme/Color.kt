@@ -19,7 +19,6 @@ val MihrabTertiaryText = Color.White.copy(alpha = 0.3f)
 // Accent
 val MihrabGold = Color(0xFFD4A537)
 val MihrabGoldBright = Color(0xFFF5C842)
-val MihrabSuccessGreen = Color(0xFF30D158)
 val MihrabAlertRed = Color(0xFFFF453A)
 
 // Prayer Home ring tokens.
@@ -31,10 +30,7 @@ val MihrabRingCountdownText = Color(0xB3EBEBF5)
 // Qibla compass ring — frame, never information. 30% is the floor at which it reads outdoors.
 val MihrabCompassRing = Color(0x4DFFFFFF)
 
-// Prayer colors — sky-based palette, locked per design guide Section 2.2
+// Prayer colors — sky-based palette per design guide Section 2.2. Only Fajr survives: it is the
+// theme's tertiary slot. The other five were never painted once the screens settled on gold and
+// white, and the design guide remains the canonical record of the full palette.
 val PrayerFajr = Color(0xFF8AABBA)
-val PrayerSunrise = Color(0xFFF5C978)
-val PrayerDhuhr = Color(0xFFF5D84A)
-val PrayerAsr = Color(0xFFE8BC4A)
-val PrayerMaghrib = Color(0xFFE8845A)
-val PrayerIsha = Color(0xFFA08BC8)

@@ -3,11 +3,6 @@
     <string name="app_name">Mihrab</string>
     <string name="tile_label">Mihrab Следующая молитва</string>
     <string name="complication_label">Mihrab Следующая молитва</string>
-    <string name="screen_home">Главная</string>
-    <string name="screen_prayers">Список молитв</string>
-    <string name="screen_qibla">Кибла</string>
-    <string name="screen_alert">Уведомление о молитве</string>
-    <string name="screen_settings">Настройки</string>
 
     <string name="prayer_fajr">Фаджр</string>
     <string name="prayer_sunrise">Восход</string>

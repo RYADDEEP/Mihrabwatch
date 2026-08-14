@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Foreground and monochrome are density PNGs lifted from the Mihrab brand master
+     (Mihrabtv/public/icon.png) — the arch is cropped and composited, never redrawn.
+     The arch is sized to 52% of the 108dp canvas so its circumradius stays inside the
+     72dp viewport circle that Wear OS masks launcher icons to. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_monochrome" />
+</adaptive-icon>

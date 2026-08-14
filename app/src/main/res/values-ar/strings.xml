@@ -3,11 +3,6 @@
     <string name="app_name">Mihrab</string>
     <string name="tile_label">Mihrab الصلاة التالية</string>
     <string name="complication_label">Mihrab الصلاة التالية</string>
-    <string name="screen_home">الرئيسية</string>
-    <string name="screen_prayers">قائمة الصلوات</string>
-    <string name="screen_qibla">القبلة</string>
-    <string name="screen_alert">تنبيه الصلاة</string>
-    <string name="screen_settings">الإعدادات</string>
 
     <string name="prayer_fajr">فجر</string>
     <string name="prayer_sunrise">شروق</string>

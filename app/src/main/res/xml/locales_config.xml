@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Supported locales for system per-app language UI (Settings → Apps → Mihrab → Language).
      The watch's runtime locale comes from sync_payload.display_language; this list is
-     for the system Settings affordance + helps Play install split APKs. -->
+     for the system Settings affordance.
+
+     Indonesian is "id" HERE and the resource folder is values-IN. That asymmetry is
+     deliberate and was verified on a Wear OS 6 (API 36) emulator:
+       * the resource folder must be values-in — with values-id the app silently rendered
+         English even with the app locale explicitly set to Indonesian;
+       * this file must say "id" — it takes BCP-47 tags, and the platform canonicalises
+         Indonesian to "id" (asking `cmd locale set-app-locales` for the legacy tag "in"
+         comes back as [id]).
+     Lint's UnusedTranslation compares the two sets as literal strings and therefore flags
+     "in present but not declared". That is a false positive; changing this to "in" would
+     break the per-app language picker. -->
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
     <locale android:name="en" />
     <locale android:name="ar" />

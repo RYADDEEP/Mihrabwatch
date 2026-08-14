@@ -3,9 +3,13 @@
 
     <uses-feature android:name="android.hardware.type.watch" />
 
+    <!-- The only permission this app needs: Supabase pairing + sync_payload reads.
+         WAKE_LOCK and BODY_SENSORS were declared by the Session 1 scaffold and used by
+         nothing — BODY_SENSORS in particular is a sensitive, runtime-prompted permission
+         shown prominently on the Play listing, for a watch that never reads a heart rate.
+         The Qibla compass uses ROTATION_VECTOR / ACCELEROMETER / MAGNETIC_FIELD, none of
+         which require any permission. -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.BODY_SENSORS" />
 
     <application
         android:allowBackup="false"

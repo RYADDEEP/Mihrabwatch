@@ -3,11 +3,6 @@
     <string name="app_name">Mihrab</string>
     <string name="tile_label">Mihrab अगली नमाज़</string>
     <string name="complication_label">Mihrab अगली नमाज़</string>
-    <string name="screen_home">होम</string>
-    <string name="screen_prayers">नमाज़ सूची</string>
-    <string name="screen_qibla">क़िबला</string>
-    <string name="screen_alert">नमाज़ अलर्ट</string>
-    <string name="screen_settings">सेटिंग्स</string>
 
     <string name="prayer_fajr">फज्र</string>
     <string name="prayer_sunrise">सूर्योदय</string>

@@ -21,7 +21,13 @@ object LocaleManager {
     fun resolveTag(displayLanguage: String?, locale: String?): String {
         if (displayLanguage != null && displayLanguage in SUPPORTED) return displayLanguage
         if (locale != null && locale in SUPPORTED) return locale
-        val device = Resources.getSystem().configuration.locales[0].language
+        // `Locale.getLanguage()` returns Java's LEGACY codes — "in" for Indonesian, "iw" for
+        // Hebrew, "ji" for Yiddish — which would never match the modern "id" in SUPPORTED, so
+        // an Indonesian watch with no display_language silently fell through to English.
+        // `toLanguageTag()` normalizes back to the modern code, which is what SUPPORTED holds.
+        val device = Resources.getSystem().configuration.locales[0]
+            .toLanguageTag()
+            .substringBefore('-')
         if (device in SUPPORTED) return device
         return "en"
     }

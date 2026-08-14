@@ -3,11 +3,6 @@
     <string name="app_name">Mihrab</string>
     <string name="tile_label">Mihrab Solat Seterusnya</string>
     <string name="complication_label">Mihrab Solat Seterusnya</string>
-    <string name="screen_home">Laman Utama</string>
-    <string name="screen_prayers">Senarai Solat</string>
-    <string name="screen_qibla">Kiblat</string>
-    <string name="screen_alert">Amaran Solat</string>
-    <string name="screen_settings">Tetapan</string>
 
     <string name="prayer_fajr">Subuh</string>
     <string name="prayer_sunrise">Dhuha</string>

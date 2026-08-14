@@ -3,11 +3,6 @@
     <string name="app_name">Mihrab</string>
     <string name="tile_label">Mihrab Sala Inayofuata</string>
     <string name="complication_label">Mihrab Sala Inayofuata</string>
-    <string name="screen_home">Nyumbani</string>
-    <string name="screen_prayers">Orodha ya Sala</string>
-    <string name="screen_qibla">Qibla</string>
-    <string name="screen_alert">Tahadhari ya Sala</string>
-    <string name="screen_settings">Mipangilio</string>
 
     <string name="prayer_fajr">Fajr</string>
     <string name="prayer_sunrise">Dhuha</string>

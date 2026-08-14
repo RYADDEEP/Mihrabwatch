@@ -20,10 +20,12 @@ local.properties
 output.json
 release/
 
-# Signing
+# Signing — never commit a keystore, a password, or the properties that point at them
 *.keystore
 *.jks
+*.p12
 keystore.properties
+key.properties
 
 # OS
 .DS_Store
