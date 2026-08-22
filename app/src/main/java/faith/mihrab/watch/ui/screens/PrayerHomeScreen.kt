@@ -282,7 +282,7 @@ private fun PrayerHomeLargeRoundPreview() {
         PrayerHomeContent(
             timeText = "05:42",
             prayerName = "FAJR",
-            countdown = "in 23m",
+            countdown = "23m",
             progress = 0.7f,
         )
     }
@@ -300,7 +300,7 @@ private fun PrayerHomeSmallRoundPreview() {
         PrayerHomeContent(
             timeText = "18:05",
             prayerName = "MAGHARIBI",
-            countdown = "baada ya 5h 30d",
+            countdown = "5h 30d",
             progress = 0.33f,
         )
     }

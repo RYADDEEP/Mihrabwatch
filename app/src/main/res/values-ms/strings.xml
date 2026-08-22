@@ -25,6 +25,4 @@
 
     <string name="watch_countdown_short_hm">%1$dj %2$dm</string>
     <string name="watch_countdown_short_m">%1$dm</string>
-    <string name="watch_countdown_long_hm">dalam %1$dj %2$dm</string>
-    <string name="watch_countdown_long_m">dalam %1$dm</string>
 </resources>

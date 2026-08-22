@@ -25,6 +25,4 @@
 
     <string name="watch_countdown_short_hm">%1$dh %2$dd</string>
     <string name="watch_countdown_short_m">%1$dd</string>
-    <string name="watch_countdown_long_hm">baada ya %1$dh %2$dd</string>
-    <string name="watch_countdown_long_m">baada ya %1$dd</string>
 </resources>

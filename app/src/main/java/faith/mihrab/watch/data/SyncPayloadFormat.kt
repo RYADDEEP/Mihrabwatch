@@ -57,17 +57,19 @@ fun countdownShort(context: Context, remainingMs: Long?): String {
     }
 }
 
-fun countdownLong(context: Context, remainingMs: Long?): String {
-    if (remainingMs == null) return "—"
-    val totalMinutes = if (remainingMs <= 0L) 0L else (remainingMs / 60_000L).coerceAtLeast(1L)
-    val hours = (totalMinutes / 60L).toInt()
-    val mins = (totalMinutes % 60L).toInt()
-    return if (hours >= 1) {
-        context.getString(R.string.watch_countdown_long_hm, hours, mins)
-    } else {
-        context.getString(R.string.watch_countdown_long_m, mins)
-    }
-}
+/**
+ * The long-form countdown. IT CARRIES NO LEADING WORD ANY MORE — same ruling as the phone,
+ * same reason: "in" looks small in English and huge in other languages. Every locale had its
+ * own prefix or suffix ("dalam", "через", "dans", "... sonra"), and each one pushed the
+ * countdown wider on a surface that has no width to give.
+ *
+ * It delegates to [countdownShort] rather than carrying its own resources, so the app, the
+ * Tile and the Complication cannot drift apart — there is one string and one formatter now.
+ * The name and the [NextPrayerView.countdownLong] field are kept because the Tile bottom line
+ * and the Complication LONG_TEXT title read them; only the text they get has changed.
+ */
+fun countdownLong(context: Context, remainingMs: Long?): String =
+    countdownShort(context, remainingMs)
 
 /** Flat next-prayer view for the Tile + Complication (separate processes, read from cache). */
 data class NextPrayerView(

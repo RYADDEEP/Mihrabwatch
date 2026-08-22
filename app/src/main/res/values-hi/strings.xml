@@ -25,6 +25,4 @@
 
     <string name="watch_countdown_short_hm">%1$dघं %2$dमि</string>
     <string name="watch_countdown_short_m">%1$dमि</string>
-    <string name="watch_countdown_long_hm">%1$dघं %2$dमि में</string>
-    <string name="watch_countdown_long_m">%1$dमि में</string>
 </resources>

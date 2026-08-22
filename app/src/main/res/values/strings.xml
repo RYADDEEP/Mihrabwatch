@@ -31,11 +31,13 @@
     <!-- Tile -->
     <string name="watch_tile_next_prayer_label">Next Prayer</string>
 
-    <!-- Tile + Complication countdown formatters. %1$d = hours, %2$d = minutes.
-         _hm variants used when hours >= 1; _m variants when only minutes remain.
-         _short used by Complication SHORT_TEXT title; _long used by Tile bottom line and Complication LONG_TEXT title. -->
+    <!-- App + Tile + Complication countdown formatter. %1$d = hours, %2$d = minutes.
+         _hm used when hours >= 1; _m when only minutes remain.
+         THERE IS NO LEADING WORD, AND NO _long PAIR ANY MORE. The countdown used to read
+         "in 1h 45m", and every locale carried its own prefix or suffix for that "in" —
+         which is small in English and long everywhere else, on a surface with no width to
+         spare. countdownLong() now delegates to countdownShort(), so all three surfaces
+         read these two strings and cannot drift apart. -->
     <string name="watch_countdown_short_hm">%1$dh %2$dm</string>
     <string name="watch_countdown_short_m">%1$dm</string>
-    <string name="watch_countdown_long_hm">in %1$dh %2$dm</string>
-    <string name="watch_countdown_long_m">in %1$dm</string>
 </resources>

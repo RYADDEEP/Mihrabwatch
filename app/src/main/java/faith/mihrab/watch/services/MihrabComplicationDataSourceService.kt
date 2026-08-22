@@ -37,7 +37,7 @@ class MihrabComplicationDataSourceService : SuspendingComplicationDataSourceServ
         name = applicationContext.getString(R.string.prayer_maghrib),
         time = "18:22",
         countdownShort = applicationContext.getString(R.string.watch_countdown_short_m, 20),
-        countdownLong = applicationContext.getString(R.string.watch_countdown_long_m, 20),
+        countdownLong = applicationContext.getString(R.string.watch_countdown_short_m, 20),
     )
 
     private fun build(type: ComplicationType, p: NextPrayerView, progress: Float?): ComplicationData? {

@@ -25,6 +25,4 @@
 
     <string name="watch_countdown_short_hm">%1$dس %2$dد</string>
     <string name="watch_countdown_short_m">%1$dد</string>
-    <string name="watch_countdown_long_hm">خلال %1$dس %2$dد</string>
-    <string name="watch_countdown_long_m">خلال %1$dد</string>
 </resources>
