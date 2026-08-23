@@ -53,6 +53,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.minutes
 import java.time.Instant
+import java.time.OffsetDateTime
 
 // The code is 8 characters of A–Z0–9 in Monospace, so it has exactly one width target and no
 // long case. Auto-sizing to that target is what makes "never wrapping, never clipping" true on
@@ -96,14 +97,56 @@ fun PairingScreen(
                 "PairingScreen: handlePaired source=$source id=${row.id} -> savePairing + onPaired",
             )
             dataStore.savePairing(row.id, userId)
+            dataStore.clearPending()
             onPaired()
         }
     }
 
+    // ⭐ IT ASKS ABOUT THE ROW IT ALREADY HAS BEFORE MINTING A NEW ONE.
+    // This used to call createPairing() unconditionally, so every relaunch
+    // abandoned the row the watch had been waiting on — and if the phone had
+    // claimed it while the user was looking away, that claim was lost for good.
+    // The watch is frozen by Android the moment it leaves the foreground, which
+    // is exactly when the user is typing the code, so "look away, then come
+    // back" is the ORDINARY path through this screen, not an edge case.
+    //
+    // Resume order: already claimed → finish the pairing; still pending and
+    // unexpired → keep the SAME code on screen so a half-typed code stays valid;
+    // gone or expired → only then mint a fresh row.
     LaunchedEffect(attempt) {
         state = PairingState.Loading
         try {
+            val remembered = dataStore.readPending()
+            if (remembered != null) {
+                Log.d("Pairing", "PairingScreen: resume check pairing_id=$remembered")
+                val row = runCatching { repository.fetchPairing(remembered) }.getOrNull()
+                when {
+                    row == null ->
+                        Log.d("Pairing", "PairingScreen: resume row gone -> mint")
+
+                    row.status == "paired" && row.pairedUserId != null -> {
+                        Log.d("Pairing", "PairingScreen: resume found CLAIMED -> completing")
+                        handlePaired(row, source = "resume")
+                        return@LaunchedEffect
+                    }
+
+                    row.status == "pending" && !isExpired(row.expiresAt) -> {
+                        Log.d(
+                            "Pairing",
+                            "PairingScreen: resume still pending, keeping code=${row.pairingCode}",
+                        )
+                        state = PairingState.Active(row)
+                        return@LaunchedEffect
+                    }
+
+                    else -> Log.d(
+                        "Pairing",
+                        "PairingScreen: resume unusable status=${row.status} -> mint",
+                    )
+                }
+            }
             val row = repository.createPairing()
+            dataStore.savePending(row.id)
             state = PairingState.Active(row)
         } catch (t: Throwable) {
             if (t is CancellationException) throw t
@@ -308,6 +351,19 @@ private fun PairingActiveContent(
         }
     }
 }
+
+/**
+ * Tolerant expiry test for a resumed row. `expires_at` comes back from PostgREST
+ * as an offset timestamp ("+00:00"), which `Instant.parse` alone rejects.
+ * An unparseable value counts as EXPIRED — the safe direction, because it mints
+ * a fresh code rather than showing one that may already be dead.
+ */
+private fun isExpired(expiresAt: String, now: Instant = Instant.now()): Boolean =
+    runCatching { OffsetDateTime.parse(expiresAt).toInstant() }
+        .recoverCatching { Instant.parse(expiresAt) }
+        .getOrNull()
+        ?.let { !it.isAfter(now) }
+        ?: true
 
 @Composable
 private fun formatExpiryMinutes(remainingSeconds: Long): String {
