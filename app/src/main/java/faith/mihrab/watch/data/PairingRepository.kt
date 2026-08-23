@@ -129,6 +129,10 @@ class PairingRepository {
         }
         Log.d(TAG, "observePairing: subscribe channel=pairing:$pairingId filter=id=eq.$pairingId")
         channel.subscribe()
+        // A rejected subscription and a silent one used to look identical from
+        // here — nothing ever reported whether the join was accepted, so months
+        // of zero events read exactly like "nothing changed yet".
+        Log.d(TAG, "observePairing: channel status=${channel.status.value}")
         try {
             updates.collect { action ->
                 Log.d(TAG, "observePairing: event received type=UPDATE pairing_id=$pairingId")

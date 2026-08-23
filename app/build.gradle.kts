@@ -34,7 +34,7 @@ val keystoreProps = Properties().apply {
 
 android {
     namespace = "faith.mihrab.watch"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "faith.mihrab.watch"
