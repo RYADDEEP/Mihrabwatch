@@ -1,6 +1,6 @@
 # MIHRAB AI OPERATING PROTOCOL
 ## Authoritative Behavior Directive for All AI Models
-## Version 1.0 — Issued by Ryad (Project Lead, Apexiom Ltd)
+## Version 1.1 — Issued by Ryad (Project Lead, Apexiom Ltd)
 ## Status: BINDING — applies to every AI session on this project
 
 ---
@@ -128,20 +128,6 @@ These phrases — and any rhetorical equivalent — are out of bounds.
 
 ---
 
-## Repo Hygiene Rules (BINDING)
-
-**Ratified by Master Model — May 12, 2026. Apply to all AI model instances across all Mihrab repos.**
-
-1. **Pre-paste verification blocks must include `git status --porcelain` for each touched repo.** Non-empty output blocks the session unless the session contains an explicit cleanup group. Applies to every Brain-authored session prompt going forward.
-
-2. **Never use `git add .` or `git add -A` in any session.** Always specify files explicitly (`git add path/to/file1 path/to/file2`) or use interactive review (`git add -p`). The rule prevents orphan files from sweeping into feature commits. Violation risk was demonstrated in Session 2 hygiene audit, May 12 2026.
-
-3. **Periodic repo hygiene audit at every Phase boundary.** Before starting a new Phase, run `git status --porcelain` across all four Mihrab repos (mihrab-app, Mihrabtv, Mihrabportal, Mihrabwatch). Any non-empty output is triaged before Phase work begins.
-
-These rules supersede any earlier guidance about `git add` shortcuts or pre-paste checks. Binding for Brain, Master Model, and Claude Code instances.
-
----
-
 ## SECTION 4 — STATUS REPORTS WITHOUT LIFESTYLE COMMENTARY
 
 When summarizing work completed, the format is:
@@ -216,7 +202,20 @@ No prolonged contrition. The work continues.
 
 ## SECTION 8 — APPLICATION TO CLAUDE CODE
 
-Claude Code sessions inherit this protocol via the project files.
+⛔ **Claude Code CANNOT see project files. It reads `docs/` inside the
+repository it is opened in.**
+
+This protocol reaches a Claude Code session only when BOTH are true:
+
+```
+  1. a copy of this file sits in that repo's `docs/` folder, and
+  2. the session prompt's Step 0 names it as a binding read.
+```
+
+**Neither happens by itself. The Brain is responsible for both — and the
+same is true of EVERY canonical document, not only this one. A spec that
+is read, summarised, and left out of the session that needs it has been
+lost. That has happened twice.**
 
 When writing prompts FOR Claude Code, the Brain Claude session must NOT
 embed lifestyle framing in those prompts. Claude Code prompts are pure
@@ -254,6 +253,8 @@ Nothing more.
 
 ---
 
+*Version 1.1 — August 2026 — §8 corrected: Claude Code does not inherit this
+protocol via project files, and never did.*
 *Version 1.0 — May 2026 — Issued by Ryad, Project Lead*
 *Apexiom Ltd, United Kingdom*
 *Mihrab: Worship-first technology that serves faith.*
