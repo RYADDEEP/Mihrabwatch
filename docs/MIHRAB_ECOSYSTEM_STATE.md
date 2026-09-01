@@ -35,7 +35,7 @@ For *facts*, defer to the canonical docs (§9); this doc states **state + sequen
 
 ---
 
-## 3. ⭐ THE ABSTRACT PATTERN — the architecture, and the newest thing here
+## 3. ⭐ THE ABSTRACT PATTERN — the architecture, and NOT YET FINISHED
 
 **One portal. Two instruments. A vertical is a row.**
 
@@ -46,6 +46,30 @@ For *facts*, defer to the canonical docs (§9); this doc states **state + sequen
 ✅ S3  RENAME         the owner's word. 10 slots of 977 keys.
 ✅ S4  THE WORKSHOP   /owner/portal-types — create a type from a
                       form, based on an existing shape.
+```
+
+**⛔ AND THE PATTERN IS NOT FINISHED. Two things were found after S4 shipped, and both are Rule 34:**
+
+```
+⛔ 1. IT IS NOT ABSTRACT. A new type is CREATED BY COPYING AN
+   EXISTING ONE, and a row with no config falls back to RETAILER.
+   ⭐ So every vertical is born as a copy of a commercial one — a
+     tariqah begins life as a shop and has its shop-ness hidden.
+   ⭐ THE FIX: an empty base, the catalogue of six shapes, and
+     retailer as a configuration like every other type.
+
+⛔ 2. THERE IS NO DELETE. Neither Portal Types nor All Partners can
+   remove a row. This rotation left `test_vertical`, a `community`
+   type with no rate row, and a duplicate markaz — all removable
+   only by writing SQL by hand.
+   ⭐ AKHI'S RULING: Mihrab will not delete an ACTIVE type or
+     partner, but the owner must have the option.
+
+⚠️ AND ONE SHAPE WAS BUILT AND IS NOT ABSTRACT EITHER — the data
+  list carries one vertical's name in its route, its key, its copy
+  and its source. It is unmerged and must be rebuilt.
+
+⭐ SEE MIHRAB_MASTER_PLAN_PATTERN PART 2 for all three.
 ```
 
 **⛔ AND THE BOUNDARY THAT GOVERNS EVERYTHING BUILT ON IT:**
@@ -228,19 +252,27 @@ what's left → MIHRAB_LAUNCH_TRACKER
 
 ## 10. ⭐ IMMEDIATE NEXT
 
-**The architecture is done. What remains is one build arc and one lane of paperwork.**
+**⛔ THE ARCHITECTURE IS NOT DONE. Three things must be corrected before the build arc resumes — see section 3.**
 
 ```
-THE BUILD ARC — the shapes, then the app
-  1. ⭐ THE DATA LIST         serves six verticals
-  2. ⭐ THE APP'S CATEGORIES  serves every religious type
-  3. the scheduled reminder   four
-  4. the self-recorded track  two
-  5. willingness              markaz
-  6. ⛔ DOES THE APP KNOW ITS USER IS A PARTNER?  — blocks 7-9
-  7. the partner section
-  8. the partner writes
-  9. the customer reads
+⛔ FIRST — FIX WHAT IS WRONG
+  the shape, rebuilt abstract AND IN THE APP
+  the branch split — the Pattern machinery merges, the browser
+    screen does not
+  the empty base and the catalogue        (Rule 34)
+  delete, on types and partners           (Rule 34)
+
+THE BUILD ARC — every step is APP. The portal gets only the
+owner's switch.
+  1. ⭐ THE DATA LIST         APP   serves six verticals
+  2. ⭐ THE CATEGORY SECTION  APP   every religious type
+  3. the scheduled reminder   APP   four
+  4. the self-recorded track  APP   two
+  5. willingness              APP   markaz
+  6. ⛔ DOES THE APP KNOW ITS USER IS A PARTNER?  APP — blocks 7-9
+  7. the partner section      APP
+  8. the partner writes       APP
+  9. the customer reads       APP
 
 ⛔ THE LAUNCH LANE — nobody has started it
   14 declarations in App content — four need a manifest audit first
@@ -290,4 +322,4 @@ THE BUILD ARC — the shapes, then the app
 
 ---
 
-**Mihrab is a worship ecosystem across phone, watch, TV and car, with a commerce spine that is now configuration rather than code. The Quran and the prayer times belong to the app. The Umrah vertical is complete and audited. What stands between Mihrab and being alive is one build arc and a lane of paperwork nobody has started. 🕋**
+**Mihrab is a worship ecosystem across phone, watch, TV and car, with a commerce spine that is becoming configuration rather than code. The Quran and the prayer times belong to the app. The Umrah vertical is complete and audited. ⛔ The Pattern is built and NOT YET ABSTRACT — see section 3. What stands between Mihrab and being alive is that correction, one build arc, and a lane of paperwork nobody has started. 🕋**

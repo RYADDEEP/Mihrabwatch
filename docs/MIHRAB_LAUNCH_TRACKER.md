@@ -125,12 +125,22 @@ The launch lane  →  submission
 
 ## ⭐ 4. THE BUILD ARC — and it does NOT block launch
 
+**⛔ BUT IT DOES NOT START WHERE IT SAYS. Three corrections come first — the Pattern is built and not yet abstract. See `MIHRAB_MASTER_PLAN_PATTERN` Part 2.**
+
+```
+⛔ FIX FIRST
+  the shape, rebuilt abstract AND IN THE APP
+  the branch split — machinery merges, browser screen does not
+  the empty base and the catalogue     (Rule 34)
+  delete, on types and partners        (Rule 34)
+```
+
 **The Abstract Pattern is complete. What follows is the six shapes, then the app.**
 
 ```
-STAGE ONE — the shapes
+STAGE ONE — the shapes  ⭐ EVERY ONE BUILT IN THE APP
   1. ⭐ THE DATA LIST          serves six verticals
-  2. ⭐ THE APP'S CATEGORIES   serves every religious type
+  2. ⭐ THE CATEGORY SECTION    serves every religious type
   3. the scheduled reminder    four
   4. the self-recorded track   two
   5. willingness by duration   markaz
@@ -151,7 +161,8 @@ STAGE TWO — the app becomes the portal
 ## ✅ 5. DONE THIS ROTATION
 
 ```
-⭐ THE ABSTRACT PATTERN — four sessions. A partner type is a row;
+⚠️ THE ABSTRACT PATTERN — four sessions, and NOT FINISHED.
+  A partner type is a row;
   a feature is a value; a label is the owner's word; and the owner
   has a workshop.
 
@@ -238,4 +249,4 @@ STAGE TWO — the app becomes the portal
 
 ---
 
-**The architecture is finished and the app is independent. What stands between Mihrab and being alive is a lane of paperwork nobody has started — fourteen declarations, a listing, a graphic and a set of screenshots. Everything else can wait. 🕋**
+**The app is independent — the Quran and the prayer times belong to it. ⛔ The architecture is BUILT AND NOT YET ABSTRACT: a vertical is still copied from another, and nothing can be deleted. That correction and the launch lane are what stand between Mihrab and being alive — fourteen declarations, a listing, a graphic and a set of screenshots, none of it started. 🕋**
