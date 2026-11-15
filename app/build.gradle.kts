@@ -110,6 +110,12 @@ android {
         buildConfig = true
     }
 
+    testOptions {
+        // android.util.Log returns defaults in JVM tests: the resolver and the repositories log on
+        // every path, which is why resolveWindow could not be unit-tested before.
+        unitTests.isReturnDefaultValues = true
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -148,6 +154,7 @@ dependencies {
     // Supabase + Ktor (pairing flow: Postgrest INSERT + Realtime subscription)
     implementation(libs.supabase.postgrest)
     implementation(libs.supabase.realtime)
+    implementation(libs.supabase.auth)
     implementation(libs.ktor.client.okhttp)
 
     // Prayer time computation (Option B — local adhan calculation)
@@ -168,6 +175,8 @@ dependencies {
 
     // Test
     testImplementation(libs.junit)
+    testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))

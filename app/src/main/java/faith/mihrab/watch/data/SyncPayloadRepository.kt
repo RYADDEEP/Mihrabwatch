@@ -6,6 +6,7 @@ import androidx.wear.tiles.TileService
 import androidx.wear.watchface.complications.datasource.ComplicationDataSourceUpdateRequester
 import faith.mihrab.watch.services.MihrabComplicationDataSourceService
 import faith.mihrab.watch.services.MihrabTileService
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
@@ -14,6 +15,7 @@ import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.github.jan.supabase.realtime.realtime
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerialName
@@ -35,12 +37,8 @@ import kotlinx.serialization.json.JsonNull
 class SyncPayloadRepository(
     private val context: Context,
     private val cache: SyncPayloadCache,
+    private val source: SyncPayloadSource = SyncPayloadSource(),
 ) {
-    @Serializable
-    private data class SyncPayloadRow(
-        @SerialName("sync_payload") val syncPayload: JsonElement? = null,
-    )
-
     fun observe(pairingId: String): Flow<SyncPayloadState> = flow {
         var lastGood: SyncPayload? = null
 
@@ -53,14 +51,7 @@ class SyncPayloadRepository(
         }
 
         // Initial bootstrap read.
-        val initial = runCatching {
-            supabase.from("device_pairings")
-                .select(Columns.list("sync_payload")) {
-                    filter { eq("id", pairingId) }
-                }
-                .decodeSingle<SyncPayloadRow>()
-                .syncPayload
-        }
+        val initial = runCatching { source.read(pairingId) }
         val initialState = initial.fold(
             onSuccess = { parse(it, lastGood) },
             onFailure = { SyncPayloadState.Error(it, lastGood) },
@@ -69,23 +60,10 @@ class SyncPayloadRepository(
         emit(initialState)
 
         // Realtime subscription — re-parse on every UPDATE to this pairing row.
-        val channel = supabase.channel("sync:$pairingId")
-        val updates = channel.postgresChangeFlow<PostgresAction.Update>(schema = "public") {
-            table = "device_pairings"
-            filter("id", FilterOperator.EQ, pairingId)
-        }
-        channel.subscribe()
-        try {
-            updates.collect { action ->
-                val element = runCatching {
-                    action.decodeRecord<SyncPayloadRow>().syncPayload
-                }.getOrElse { action.record["sync_payload"] }
-                val state = parse(element, lastGood)
-                lastGood = applySideEffects(state, lastGood)
-                emit(state)
-            }
-        } finally {
-            supabase.realtime.removeChannel(channel)
+        source.updates(pairingId).collect { element ->
+            val state = parse(element, lastGood)
+            lastGood = applySideEffects(state, lastGood)
+            emit(state)
         }
     }
 
@@ -122,6 +100,62 @@ class SyncPayloadRepository(
             ).requestUpdateAll()
         }
         return state.payload
+    }
+}
+
+/**
+ * The read and the listener on this watch's own `device_pairings` row, both as the watch's own
+ * anonymous identity ([DeviceIdentity.ensureSignedIn] first — the pairing lock). Kept apart from
+ * [SyncPayloadRepository] so they need no Android Context and run against a faked server in tests.
+ */
+class SyncPayloadSource(
+    private val client: SupabaseClient = supabase,
+    private val identity: DeviceIdentity = deviceIdentity,
+) {
+    @Serializable
+    private data class SyncPayloadRow(
+        @SerialName("sync_payload") val syncPayload: JsonElement? = null,
+    )
+
+    /** The bootstrap read. Throws on any failure; the caller maps it to Error(lastGood). */
+    suspend fun read(pairingId: String): JsonElement? {
+        identity.ensureSignedIn()
+        return client.from("device_pairings")
+            .select(Columns.list("sync_payload")) {
+                filter { eq("id", pairingId) }
+            }
+            .decodeSingle<SyncPayloadRow>()
+            .syncPayload
+    }
+
+    /**
+     * The sync_payload of every UPDATE to the row. If the identity cannot be made usable right
+     * now (offline at launch), the channel is still opened, as before: Realtime re-authorises it
+     * by itself (setAuth) the moment Auth refreshes the stored session.
+     */
+    fun updates(pairingId: String): Flow<JsonElement?> = flow {
+        try {
+            identity.ensureSignedIn()
+        } catch (t: Throwable) {
+            if (t is CancellationException) throw t
+        }
+        val channel = client.channel("sync:$pairingId")
+        val updates = channel.postgresChangeFlow<PostgresAction.Update>(schema = "public") {
+            table = "device_pairings"
+            filter("id", FilterOperator.EQ, pairingId)
+        }
+        channel.subscribe()
+        try {
+            updates.collect { action ->
+                emit(
+                    runCatching {
+                        action.decodeRecord<SyncPayloadRow>().syncPayload
+                    }.getOrElse { action.record["sync_payload"] },
+                )
+            }
+        } finally {
+            client.realtime.removeChannel(channel)
+        }
     }
 }
 

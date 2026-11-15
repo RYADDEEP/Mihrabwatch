@@ -1,6 +1,7 @@
 package faith.mihrab.watch.data
 
 import android.util.Log
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
@@ -46,7 +47,14 @@ private data class PairingInsert(
     @SerialName("expires_at") val expiresAt: String,
 )
 
-class PairingRepository {
+/**
+ * Every call here goes out as the watch's own anonymous identity: [DeviceIdentity.ensureSignedIn]
+ * is the FIRST line of each function that touches `device_pairings` (the pairing lock).
+ */
+class PairingRepository(
+    private val client: SupabaseClient = supabase,
+    private val identity: DeviceIdentity = deviceIdentity,
+) {
     private val random = SecureRandom()
 
     fun generateCode(): String = buildString(PAIRING_CODE_LENGTH) {
@@ -64,6 +72,7 @@ class PairingRepository {
      * no regression.
      */
     suspend fun createPairing(): PairingRow {
+        identity.ensureSignedIn()
         Log.d(TAG, "createPairing: entry")
         val code = generateCode()
         Log.d(TAG, "createPairing: code generated code=$code")
@@ -77,7 +86,7 @@ class PairingRepository {
             expiresAt = clientExpiresAt,
         )
         Log.d(TAG, "createPairing: INSERT request expires_at_client=$clientExpiresAt")
-        val inserted = supabase
+        val inserted = client
             .from("device_pairings")
             .insert(payload) { select() }
             .decodeSingle<PairingRow>()
@@ -99,7 +108,7 @@ class PairingRepository {
             .plus(PAIRING_EXPIRY_MINUTES, ChronoUnit.MINUTES)
             .toString()
         val updateResult = runCatching {
-            supabase.from("device_pairings").update({ set("expires_at", correctExpiresAt) }) {
+            client.from("device_pairings").update({ set("expires_at", correctExpiresAt) }) {
                 filter { eq("id", inserted.id) }
             }
         }
@@ -122,7 +131,8 @@ class PairingRepository {
     }
 
     fun observePairing(pairingId: String): Flow<PairingRow> = flow {
-        val channel = supabase.channel("pairing:$pairingId")
+        identity.ensureSignedIn()
+        val channel = client.channel("pairing:$pairingId")
         val updates = channel.postgresChangeFlow<PostgresAction.Update>(schema = "public") {
             table = "device_pairings"
             filter("id", FilterOperator.EQ, pairingId)
@@ -167,16 +177,18 @@ class PairingRepository {
             throw t
         } finally {
             Log.d(TAG, "observePairing: subscription torn down pairing_id=$pairingId")
-            supabase.realtime.removeChannel(channel)
+            client.realtime.removeChannel(channel)
         }
     }
 
-    suspend fun fetchPairing(id: String): PairingRow? =
-        supabase.from("device_pairings")
+    suspend fun fetchPairing(id: String): PairingRow? {
+        identity.ensureSignedIn()
+        return client.from("device_pairings")
             .select(Columns.ALL) {
                 filter { eq("id", id) }
             }
             .decodeSingleOrNull<PairingRow>()
+    }
 
     private fun parseServerInstant(value: String): Instant? = runCatching {
         OffsetDateTime.parse(value).toInstant()
