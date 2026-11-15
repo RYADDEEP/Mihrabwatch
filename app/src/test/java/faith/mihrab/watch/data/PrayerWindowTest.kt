@@ -14,8 +14,9 @@ import java.time.ZoneId
  *
  * Pure JVM, no mocking: `findWindow` takes an injected `now`, and the known "MWL"/"Shafi"
  * inputs hit real `when` branches so the `android.util.Log.w` fallbacks are never invoked.
- * `resolveWindow` is deliberately not tested here — it logs on every path, which this project
- * has no test mocking configured for.
+ * `resolveWindow` logs on every path; since the pairing lock the unit tests run with
+ * `isReturnDefaultValues`, so it is tested here too: the watch's record keeps its coordinates,
+ * and the window is still computed from them.
  *
  * Times are computed rather than hardcoded: the absolute values are already pinned against an
  * Aladhan reference by [PrayerComputationServiceTest]. What is asserted here is the *window*
@@ -172,6 +173,32 @@ class PrayerWindowTest {
 
         assertEquals(0f, windowProgress(window, open.minus(Duration.ofHours(1)))!!, TOLERANCE)
         assertEquals(1f, windowProgress(window, close.plus(Duration.ofHours(1)))!!, TOLERANCE)
+    }
+
+    // --- resolveWindow: the payload's coordinates (the watch's record keeps them) ---
+
+    private val payload = SyncPayload(
+        timezone = timezone,
+        location = SyncLocation(latitude = lat, longitude = lng),
+        calculation = SyncCalculation(method = method, juristic = juristic),
+    )
+
+    @Test
+    fun resolveWindow_computesTheWindowFromThePayloadsCoordinates() {
+        val today = times(date)
+        val now = today.dhuhr.plus(Duration.ofMinutes(30))
+
+        val window = resolveWindow(payload, service, now)
+        assertEquals(windowAt(now), window)
+        assertEquals("dhuhr", window!!.previous.name)
+        assertEquals("asr", window.next.name)
+    }
+
+    @Test
+    fun resolveWindow_isNullWithoutCoordinates() {
+        val now = times(date).dhuhr
+        assertNull(resolveWindow(payload.copy(location = SyncLocation(latitude = null, longitude = null)), service, now))
+        assertNull(resolveWindow(payload.copy(location = null), service, now))
     }
 
     private companion object {
